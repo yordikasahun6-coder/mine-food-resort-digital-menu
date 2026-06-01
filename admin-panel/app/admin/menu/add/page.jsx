@@ -7,17 +7,17 @@ import MultiImageUpload from '@/components/admin/MultiImageUpload'
 export default function AddItemPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    description: '',
-    images: [],
-    item_type: 'food',
-    estimated_time: 15,
-    is_featured: false,
-    is_available: true,
-    spice_level: 'none'
-  })
+const [formData, setFormData] = useState({
+  name: '',
+  price: '',
+  description: '',
+  images: [],
+  item_type: 'food',
+  estimated_time: 15,
+  is_featured: false,
+  is_available: true,
+  spice_level: 'none'
+})
 
   // Function to get dynamic default description based on item type
   const getDefaultDescription = (type) => {
