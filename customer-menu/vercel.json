@@ -1,0 +1,8 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://cgtlikaqzbamslwgcxlj.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndGxpa2FxemJhbXNsd2djeGxqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMzQ1MzQsImV4cCI6MjA5NTgxMDUzNH0.3udipH2tOhpw-5y_XIMml2vKj2hg2NdVaHar98s56jI"
+    }
+  }
+}
