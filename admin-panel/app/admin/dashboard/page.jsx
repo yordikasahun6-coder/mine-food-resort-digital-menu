@@ -74,6 +74,12 @@ export default function DashboardPage() {
             >
               EXIT
             </button>
+	    <button 
+  onClick={() => window.location.href = '/admin/settings'} 
+  className="border border-[#B3945B]/50 text-[#B3945B] px-6 py-2 rounded-lg hover:bg-[#B3945B]/10 transition"
+>
+  ⚙️ SETTINGS
+</button>
           </div>
         </div>
 
