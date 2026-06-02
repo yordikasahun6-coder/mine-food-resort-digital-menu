@@ -10,10 +10,11 @@ export default function LoginPage() {
 const handleSubmit = (e) => {
   e.preventDefault()
   
-  // Get stored password (default is 'admin123')
+  // Get stored credentials
+  const storedUsername = localStorage.getItem('admin_username') || 'admin@minefood.com'
   const storedPassword = localStorage.getItem('admin_password') || 'admin123'
   
-  if (email === 'admin@minefood.com' && password === storedPassword) {
+  if (email === storedUsername && password === storedPassword) {
     localStorage.setItem('admin_logged_in', 'true')
     window.location.href = '/admin/dashboard'
   } else {

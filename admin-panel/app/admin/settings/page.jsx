@@ -7,6 +7,8 @@ export default function SettingsPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [currentUsernameDisplay, setCurrentUsernameDisplay] = useState('')
   const [formData, setFormData] = useState({
     currentUsername: '',
     newUsername: '',
@@ -17,15 +19,18 @@ export default function SettingsPage() {
   const [message, setMessage] = useState({ text: '', type: '' })
 
   useEffect(() => {
+    setMounted(true)
     const isLoggedIn = localStorage.getItem('admin_logged_in')
     if (!isLoggedIn) {
       router.push('/admin/login')
     }
     
-    // Load current username from localStorage
     const savedUsername = localStorage.getItem('admin_username')
     if (savedUsername) {
+      setCurrentUsernameDisplay(savedUsername)
       setFormData(prev => ({ ...prev, newUsername: savedUsername }))
+    } else {
+      setCurrentUsernameDisplay('admin@minefood.com')
     }
   }, [])
 
@@ -57,12 +62,10 @@ export default function SettingsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    // Verify current credentials first
     if (!verifyCurrentCredentials()) {
       return
     }
     
-    // Check if any changes were made
     const hasUsernameChange = formData.newUsername && 
       formData.newUsername !== (localStorage.getItem('admin_username') || 'admin@minefood.com')
     
@@ -73,7 +76,6 @@ export default function SettingsPage() {
       return
     }
     
-    // Validate password if being changed
     if (hasPasswordChange) {
       if (formData.newPassword !== formData.confirmPassword) {
         setMessage({ text: 'New passwords do not match', type: 'error' })
@@ -88,14 +90,11 @@ export default function SettingsPage() {
     
     setLoading(true)
     
-    // Simulate save
     setTimeout(() => {
-      // Save new username
       if (hasUsernameChange) {
         localStorage.setItem('admin_username', formData.newUsername)
       }
       
-      // Save new password
       if (hasPasswordChange) {
         localStorage.setItem('admin_password', formData.newPassword)
       }
@@ -114,12 +113,18 @@ export default function SettingsPage() {
     setLoading(false)
   }
 
-  const currentUsername = localStorage.getItem('admin_username') || 'admin@minefood.com'
+  // Don't render anything during server-side rendering
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex items-center justify-center">
+        <div className="text-[#B3945B]">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] p-8">
       <div className="max-w-md mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <button
@@ -136,16 +141,13 @@ export default function SettingsPage() {
           <p className="text-gray-500 mt-1">Update your profile credentials</p>
         </div>
 
-        {/* Current Info Display */}
         <div className="bg-[#1A1A1A] rounded-xl border border-[#B3945B]/20 p-4 mb-6">
           <p className="text-gray-400 text-sm">Current Username:</p>
-          <p className="text-[#B3945B] font-semibold">{currentUsername}</p>
+          <p className="text-[#B3945B] font-semibold">{currentUsernameDisplay}</p>
         </div>
 
-        {/* Settings Form */}
         <div className="bg-[#1A1A1A] rounded-xl border border-[#B3945B]/20 p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[#B3945B]/20"></div>
@@ -155,7 +157,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Current Credentials (Required) */}
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">
                 CURRENT USERNAME <span className="text-red-400">*</span>
@@ -186,7 +187,6 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[#B3945B]/20"></div>
@@ -196,7 +196,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* New Username */}
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">NEW USERNAME (Optional)</label>
               <input
@@ -210,7 +209,6 @@ export default function SettingsPage() {
               <p className="text-gray-500 text-xs mt-1">Leave empty to keep current</p>
             </div>
 
-            {/* New Password */}
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">NEW PASSWORD (Optional)</label>
               <input
@@ -224,7 +222,6 @@ export default function SettingsPage() {
               <p className="text-gray-500 text-xs mt-1">Minimum 6 characters. Leave empty to keep current</p>
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">CONFIRM NEW PASSWORD</label>
               <input
@@ -237,7 +234,6 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Show/Hide Password Toggle */}
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -251,7 +247,6 @@ export default function SettingsPage() {
               </label>
             </div>
 
-            {/* Message */}
             {message.text && (
               <div className={`p-3 rounded-lg ${
                 message.type === 'success' 
@@ -262,7 +257,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
