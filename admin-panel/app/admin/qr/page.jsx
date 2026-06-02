@@ -8,7 +8,8 @@ export default function QRPage() {
 
   function generateQR() {
     if (!tableNumber) return
-    const customerUrl = `${window.location.origin}?table=${tableNumber}`
+    // FIXED: Use Customer Menu URL, not admin URL
+    const customerUrl = `https://mine-food-customer-menu.vercel.app?table=${tableNumber}`
     setQrUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(customerUrl)}`)
   }
 
@@ -39,8 +40,9 @@ export default function QRPage() {
 
           {qrUrl && (
             <div className="mt-6 text-center">
-              <img src={qrUrl} alt="QR Code" className="mx-auto mb-4" />
+              <img src={qrUrl} alt={`QR Code for Table ${tableNumber}`} className="mx-auto mb-4" />
               <p className="text-[#B3945B] font-bold">Table #{tableNumber}</p>
+              <p className="text-gray-400 text-xs mt-2">Scan to view menu</p>
             </div>
           )}
         </div>
