@@ -96,7 +96,7 @@ const handleItemTypeChange = (newType) => {
 
           {/* Price */}
           <div>
-            <label className="block text-[#B3945B] text-sm mb-2">PRICE ($) *</label>
+            <label className="block text-[#B3945B] text-sm mb-2">PRICE (BIRR) *</label>
             <input
               type="number"
               step="0.01"

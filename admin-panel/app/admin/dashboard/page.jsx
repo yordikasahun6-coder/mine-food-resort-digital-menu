@@ -25,7 +25,7 @@ export default function DashboardPage() {
 
   async function deleteItem(id) {
     if (confirm('Delete this item?')) {
-      await fetch(`/api/admin/menu?id=${id}`, { method: 'DELETE' })
+      await fetch(`/api/admin/menu?id=BIRR {id}`, { method: 'DELETE' })
       loadItems()
     }
   }
@@ -124,9 +124,9 @@ export default function DashboardPage() {
                       {item.is_featured && <p className="text-[var(--gold)] text-xs">✦ SIGNATURE ✦</p>}
                     </td>
                     <td className="px-6 py-4 text-[var(--text-secondary)] capitalize">{item.category}</td>
-                    <td className="px-6 py-4 text-[var(--gold)] font-bold">${item.price}</td>
+                    <td className="px-6 py-4 text-[var(--gold)] font-bold">BIRR {item.price}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs ${
+                      <span className={`px-3 py-1 rounded-full text-xs BIRR {
                         item.is_available ? 'bg-[var(--gold)]/20 text-[var(--gold)]' : 'bg-gray-700 text-gray-400'
                       }`}>
                         {item.is_available ? 'ACTIVE' : 'OFFLINE'}
@@ -135,7 +135,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-4">
                       <div className="flex gap-3">
                         <button 
-                          onClick={() => window.location.href = `/admin/menu/edit?id=${item.id}`} 
+                          onClick={() => window.location.href = `/admin/menu/edit?id=BIRR {item.id}`} 
                           className="text-[var(--gold)] hover:text-[var(--gold-light)] transition text-sm"
                         >
                           EDIT

@@ -152,7 +152,7 @@ export default function Home() {
   }
 
   async function fetchRatings(itemId) {
-    const response = await fetch(`/api/ratings?menu_item_id=${itemId}`)
+    const response = await fetch(`/api/ratings?menu_item_id=BIRR {itemId}`)
     const data = await response.json()
     return data
   }
@@ -257,7 +257,7 @@ export default function Home() {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => setMenuType('food')}
-            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 btn-shine ${
+            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 btn-shine BIRR {
               menuType === 'food'
                 ? 'bg-gradient-to-r from-[var(--gold)] to-[#C4A25A] text-[var(--bg-primary)] shadow-lg scale-105 animate-glow-pulse'
                 : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-[var(--gold)]/10'
@@ -267,7 +267,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setMenuType('drinks')}
-            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 btn-shine ${
+            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 btn-shine BIRR {
               menuType === 'drinks'
                 ? 'bg-gradient-to-r from-[var(--gold)] to-[#C4A25A] text-[var(--bg-primary)] shadow-lg scale-105 animate-glow-pulse'
                 : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-[var(--gold)]/10'
@@ -311,7 +311,7 @@ export default function Home() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => setSortBy('default')}
-            className={`text-xs px-3 py-1 rounded-full transition ${
+            className={`text-xs px-3 py-1 rounded-full transition BIRR {
               sortBy === 'default' ? 'bg-[var(--gold)] text-[var(--bg-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--gold)]'
             }`}
           >
@@ -319,7 +319,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setSortBy('price_asc')}
-            className={`text-xs px-3 py-1 rounded-full transition ${
+            className={`text-xs px-3 py-1 rounded-full transition BIRR {
               sortBy === 'price_asc' ? 'bg-[var(--gold)] text-[var(--bg-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--gold)]'
             }`}
           >
@@ -327,7 +327,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setSortBy('price_desc')}
-            className={`text-xs px-3 py-1 rounded-full transition ${
+            className={`text-xs px-3 py-1 rounded-full transition BIRR {
               sortBy === 'price_desc' ? 'bg-[var(--gold)] text-[var(--bg-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--gold)]'
             }`}
           >
@@ -335,7 +335,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setSortBy('name_asc')}
-            className={`text-xs px-3 py-1 rounded-full transition ${
+            className={`text-xs px-3 py-1 rounded-full transition BIRR {
               sortBy === 'name_asc' ? 'bg-[var(--gold)] text-[var(--bg-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--gold)]'
             }`}
           >
@@ -351,7 +351,7 @@ export default function Home() {
             <div className="text-8xl mb-6 opacity-50 animate-float">🍽️</div>
             <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">No items found</h3>
             <p className="text-[var(--text-secondary)]">
-              {searchQuery ? `No results for "${searchQuery}"` : `No ${menuType} items available`}
+              {searchQuery ? `No results for "BIRR {searchQuery}"` : `No BIRR {menuType} items available`}
             </p>
             {searchQuery && (
               <button
@@ -375,16 +375,16 @@ export default function Home() {
                   }
                 }}
                 className="group bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-secondary)] rounded-2xl overflow-hidden border border-[var(--border-color)] hover:border-[var(--gold)]/60 transition-all duration-500 cursor-pointer card-3d"
-                style={{ animationDelay: `${index * 0.05}s` }}
+                style={{ animationDelay: `BIRR {index * 0.05}s` }}
               >
                 {/* Image with smooth transition */}
                 {item.images && item.images.length > 0 ? (
                   <div className="image-zoom h-56 relative overflow-hidden bg-[var(--bg-primary)]">
                     <img 
-                      key={`${item.id}-${currentImageIndex[item.id] || 0}`}
+                      key={`BIRR {item.id}-BIRR {currentImageIndex[item.id] || 0}`}
                       src={getDisplayImage(item)} 
                       alt={item.name}
-                      className={`w-full h-full object-cover transition-all duration-500 ${animatingImage[item.id] || ''}`}
+                      className={`w-full h-full object-cover transition-all duration-500 BIRR {animatingImage[item.id] || ''}`}
                       style={{ transition: 'opacity 0.5s ease-out, transform 0.5s ease-out' }}
                     />
                     
@@ -430,7 +430,7 @@ export default function Home() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-[var(--gold)]">${item.price}</span>
+                    <span className="text-2xl font-bold text-[var(--gold)]">BIRR {item.price}</span>
                     <button className="px-3 py-1 bg-[var(--gold)]/20 text-[var(--gold)] text-xs rounded-full hover:bg-[var(--gold)]/40 transition btn-shine">
                       View
                     </button>
@@ -461,7 +461,7 @@ export default function Home() {
                 key={selectedImageIndex}
                 src={selectedItem.images?.[selectedImageIndex] || selectedItem.image_url} 
                 alt={selectedItem.name} 
-                className={`w-full h-72 object-cover transition-all duration-400 ${galleryAnimation}`}
+                className={`w-full h-72 object-cover transition-all duration-400 BIRR {galleryAnimation}`}
               />
               
               {selectedItem.images?.length > 1 && (
@@ -492,7 +492,7 @@ export default function Home() {
                         setTimeout(() => setGalleryAnimation(''), 400)
                         setSelectedImageIndex(idx)
                       }}
-                      className={`transition-all duration-300 ${
+                      className={`transition-all duration-300 BIRR {
                         idx === selectedImageIndex 
                           ? 'w-6 h-2 bg-[var(--gold)] rounded-full' 
                           : 'w-2 h-2 bg-gray-500 rounded-full hover:bg-gray-400'
@@ -525,7 +525,7 @@ export default function Home() {
               <p className="text-[var(--text-secondary)] leading-relaxed mb-6">{selectedItem.description || 'A signature dish crafted by our expert chefs using the finest ingredients.'}</p>
               
               <div className="flex justify-between items-center">
-                <span className="text-4xl font-bold text-[var(--gold)] gold-shimmer-text">${selectedItem.price}</span>
+                <span className="text-4xl font-bold text-[var(--gold)] gold-shimmer-text">BIRR {selectedItem.price}</span>
               </div>
               
               {selectedItem.spice_level && selectedItem.spice_level !== 'none' && (
