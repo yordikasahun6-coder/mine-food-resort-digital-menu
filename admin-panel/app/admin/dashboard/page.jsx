@@ -69,6 +69,13 @@ export default function DashboardPage() {
 >
   📱 QR Codes
 </button>
+
+  <button 
+  onClick={() => window.location.href = '/admin/settings'} 
+  className="border border-[#B3945B] text-[#B3945B] px-4 py-2 rounded-lg hover:bg-[#B3945B]/10 transition"
+>
+  ⚙️ Settings
+</button>
           <button 
             onClick={logout} 
             className="border border-[#B3945B] text-[#B3945B] px-4 py-2 rounded-lg hover:bg-[#B3945B]/10 transition"
