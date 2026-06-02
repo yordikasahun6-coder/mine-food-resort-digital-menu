@@ -64,6 +64,12 @@ export default function DashboardPage() {
             + Add Item
           </button>
           <button 
+  onClick={() => window.location.href = '/admin/qr'} 
+  className="border border-[#B3945B] text-[#B3945B] px-4 py-2 rounded-lg hover:bg-[#B3945B]/10 transition"
+>
+  📱 QR Codes
+</button>
+          <button 
             onClick={logout} 
             className="border border-[#B3945B] text-[#B3945B] px-4 py-2 rounded-lg hover:bg-[#B3945B]/10 transition"
           >
