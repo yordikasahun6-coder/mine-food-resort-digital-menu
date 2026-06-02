@@ -7,15 +7,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (email === 'admin@minefood.com' && password === 'admin123') {
-      localStorage.setItem('admin_logged_in', 'true')
-      window.location.href = '/admin/dashboard'
-    } else {
-      setError('ACCESS DENIED')
-    }
+const handleSubmit = (e) => {
+  e.preventDefault()
+  
+  // Get stored password (default is 'admin123')
+  const storedPassword = localStorage.getItem('admin_password') || 'admin123'
+  
+  if (email === 'admin@minefood.com' && password === storedPassword) {
+    localStorage.setItem('admin_logged_in', 'true')
+    window.location.href = '/admin/dashboard'
+  } else {
+    setError('Invalid credentials')
   }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex items-center justify-center relative overflow-hidden">
