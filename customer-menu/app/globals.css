@@ -1,10 +1,4 @@
-﻿@import "tailwindcss";
-
-/* ============================================
-   MINE FOOD RESORT - MIDNIGHT GOLD THEME
-   ============================================ */
-
-/* Theme Variables - Dark Mode (Default) */
+﻿/* Dark Mode (Default) */
 :root {
   --bg-primary: #0A0A0A;
   --bg-secondary: #1A1A1A;
@@ -28,11 +22,59 @@
   --gold-light: #D4A85C;
 }
 
-body {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+/* Apply to ALL elements */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html, body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  color: var(--text-primary) !important;
   min-height: 100vh;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Force all containers to use variables */
+div, section, main, article, header, footer, nav {
+  background-color: transparent;
+}
+
+/* Card backgrounds */
+.bg-\[\#1A1A1A\] {
+  background-color: var(--bg-card) !important;
+}
+
+.bg-\[\#0A0A0A\] {
+  background-color: var(--bg-primary) !important;
+}
+
+.text-white, .text-gray-300, .text-gray-400, .text-gray-500 {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-400, .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+
+.border-\[\#B3945B\]\/20, .border-\[\#B3945B\]\/30 {
+  border-color: var(--border-color) !important;
+}
+
+.text-\[\#B3945B\] {
+  color: var(--gold) !important;
+}
+
+.bg-\[\#B3945B\] {
+  background-color: var(--gold) !important;
+}
+
+/* Particle background */
+.particle-bg::before {
+  background-image: radial-gradient(circle at 20% 40%, rgba(179, 148, 91, 0.08) 1px, transparent 1px) !important;
 }
 
 /* Custom gold scrollbar */
@@ -54,7 +96,7 @@ body {
   background: var(--gold-light);
 }
 
-/* Gold selection color */
+/* Selection color */
 ::selection {
   background: var(--gold);
   color: var(--bg-primary);
@@ -66,125 +108,59 @@ html {
 }
 
 /* ============================================
-   PREMIUM ANIMATIONS
+   ANIMATIONS (keep all your existing animations)
    ============================================ */
 
-/* Gold shimmer effect */
-@keyframes goldShimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Floating animation */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Glow pulse */
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(179, 148, 91, 0.3), 0 0 10px rgba(179, 148, 91, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(179, 148, 91, 0.6), 0 0 30px rgba(232, 200, 112, 0.4);
-  }
-}
-
-/* Slide up fade in */
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Scale fade in */
-@keyframes scaleFade {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Crossfade for images */
 @keyframes crossfade {
-  0% {
-    opacity: 0.3;
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  0% { opacity: 0.3; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-/* Slide in right */
 @keyframes slideInRight {
-  0% {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
-/* Slide in left */
 @keyframes slideInLeft {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
-/* Fade in */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Bounce in */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(179, 148, 91, 0.3), 0 0 10px rgba(179, 148, 91, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(179, 148, 91, 0.6), 0 0 30px rgba(232, 200, 112, 0.4); }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleFade {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Animation Classes */
@@ -233,7 +209,7 @@ html {
   animation: goldShimmer 3s linear infinite;
 }
 
-/* Stagger children animations */
+/* Stagger children */
 .stagger-children > * {
   opacity: 0;
   animation: slideUpFade 0.5s ease-out forwards;
@@ -246,7 +222,7 @@ html {
 .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
 .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
 
-/* Card hover effect */
+/* Card hover */
 .card-hover-effect {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -256,7 +232,7 @@ html {
   box-shadow: 0 20px 40px rgba(179, 148, 91, 0.2);
 }
 
-/* 3D Card Effect */
+/* 3D Card */
 .card-3d {
   transform-style: preserve-3d;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -280,7 +256,7 @@ html {
   transform: scale(1.1);
 }
 
-/* Button shine effect */
+/* Button shine */
 .btn-shine {
   position: relative;
   overflow: hidden;
@@ -317,13 +293,4 @@ html {
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
-}
-
-/* Layer base */
-@layer base {
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
 }
