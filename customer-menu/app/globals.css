@@ -8,76 +8,101 @@
   --border-color: rgba(179, 148, 91, 0.2);
   --gold: #B3945B;
   --gold-light: #E8C870;
+  --card-bg: #1A1A1A;
+  --input-bg: #1A1A1A;
 }
 
 /* Light Mode */
 .light-mode {
-  --bg-primary: #F5F5F0;
+  --bg-primary: #F8F8F4;
   --bg-secondary: #FFFFFF;
   --bg-card: #FFFFFF;
   --text-primary: #1A1A1A;
   --text-secondary: #6B7280;
-  --border-color: rgba(179, 148, 91, 0.3);
+  --border-color: rgba(179, 148, 91, 0.25);
   --gold: #B3945B;
   --gold-light: #D4A85C;
-}
-
-/* Apply to ALL elements */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  --card-bg: #FFFFFF;
+  --input-bg: #F3F3F0;
 }
 
 html, body {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  background: var(--bg-primary) !important;
   color: var(--text-primary) !important;
   min-height: 100vh;
+  transition: all 0.3s ease;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  background: var(--bg-primary) !important;
   color: var(--text-primary) !important;
 }
 
-/* Force all containers to use variables */
-div, section, main, article, header, footer, nav {
-  background-color: transparent;
-}
-
-/* Card backgrounds */
-.bg-\[\#1A1A1A\] {
-  background-color: var(--bg-card) !important;
-}
-
-.bg-\[\#0A0A0A\] {
-  background-color: var(--bg-primary) !important;
-}
-
-.text-white, .text-gray-300, .text-gray-400, .text-gray-500 {
+/* Force all text colors */
+.text-white, .text-gray-300, h1, h2, h3, h4, p, span, label {
   color: var(--text-primary) !important;
 }
 
-.text-gray-400, .text-gray-500 {
+.text-gray-400, .text-gray-500, .text-gray-600, .placeholder-gray-500 {
   color: var(--text-secondary) !important;
 }
 
-.border-\[\#B3945B\]\/20, .border-\[\#B3945B\]\/30 {
+/* Background overrides */
+.bg-gradient-to-br, .bg-gradient-to-b, .bg-gradient-to-r {
+  background: var(--bg-primary) !important;
+}
+
+.bg-\[\#1A1A1A\], .bg-\[\#0F0F0F\], .bg-\[var\(--bg-card\)\] {
+  background-color: var(--card-bg) !important;
+}
+
+.bg-\[\#0A0A0A\], .bg-black\/50, .bg-black\/60, .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.light-mode .bg-black\/50,
+.light-mode .bg-black\/60,
+.light-mode .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Input fields */
+input, textarea, select {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Cards */
+.group, .rounded-2xl, .rounded-xl, .rounded-lg {
+  background-color: var(--card-bg) !important;
+}
+
+/* Borders */
+.border, .border-\[\#B3945B\]\/20, .border-\[\#B3945B\]\/30 {
   border-color: var(--border-color) !important;
 }
 
-.text-\[\#B3945B\] {
+/* Gold elements */
+.text-\[\#B3945B\], .text-\[var\(--gold\)\] {
   color: var(--gold) !important;
 }
 
-.bg-\[\#B3945B\] {
+.bg-\[\#B3945B\], .bg-\[var\(--gold\)\] {
   background-color: var(--gold) !important;
 }
 
-/* Particle background */
-.particle-bg::before {
-  background-image: radial-gradient(circle at 20% 40%, rgba(179, 148, 91, 0.08) 1px, transparent 1px) !important;
+/* Buttons */
+button:not(.btn-shine) {
+  transition: all 0.3s ease;
 }
 
-/* Custom gold scrollbar */
+/* Video overlay */
+.absolute.inset-0.bg-gradient-to-b {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, var(--bg-primary) 100%) !important;
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -96,7 +121,6 @@ div, section, main, article, header, footer, nav {
   background: var(--gold-light);
 }
 
-/* Selection color */
 ::selection {
   background: var(--gold);
   color: var(--bg-primary);
@@ -108,7 +132,7 @@ html {
 }
 
 /* ============================================
-   ANIMATIONS (keep all your existing animations)
+   ANIMATIONS
    ============================================ */
 
 @keyframes crossfade {
@@ -163,7 +187,6 @@ html {
   100% { background-position: 200% 0; }
 }
 
-/* Animation Classes */
 .image-crossfade {
   animation: crossfade 0.5s ease-out forwards;
 }
@@ -209,7 +232,6 @@ html {
   animation: goldShimmer 3s linear infinite;
 }
 
-/* Stagger children */
 .stagger-children > * {
   opacity: 0;
   animation: slideUpFade 0.5s ease-out forwards;
@@ -222,7 +244,6 @@ html {
 .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
 .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
 
-/* Card hover */
 .card-hover-effect {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -232,7 +253,6 @@ html {
   box-shadow: 0 20px 40px rgba(179, 148, 91, 0.2);
 }
 
-/* 3D Card */
 .card-3d {
   transform-style: preserve-3d;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -243,7 +263,6 @@ html {
   box-shadow: 0 25px 40px rgba(179, 148, 91, 0.3);
 }
 
-/* Image zoom */
 .image-zoom {
   overflow: hidden;
 }
@@ -256,7 +275,6 @@ html {
   transform: scale(1.1);
 }
 
-/* Button shine */
 .btn-shine {
   position: relative;
   overflow: hidden;
@@ -278,7 +296,6 @@ html {
   left: 100%;
 }
 
-/* Particle background */
 .particle-bg {
   position: relative;
   overflow-x: hidden;
@@ -289,7 +306,7 @@ html {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(circle at 20% 40%, rgba(179, 148, 91, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(circle at 20% 40%, rgba(179, 148, 91, 0.06) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
