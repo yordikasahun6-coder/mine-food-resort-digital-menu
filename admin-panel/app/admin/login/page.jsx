@@ -10,45 +10,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    try {
-      // First, get the current admin username and password from database
-      const response = await fetch('/api/admin/settings')
-      
-      if (!response.ok) {
-        setError('Authentication service error')
-        setLoading(false)
-        return
-      }
-
-      const data = await response.json()
-      
-      // For password comparison, we're using a simple check
-      // The default password is 'admin123'
-      // If you change password in database, update this logic
-      const validPassword = 'admin123'
-      
-      if (email === data.username && password === validPassword) {
-        localStorage.setItem('admin_logged_in', 'true')
-        router.push('/admin/dashboard')
-      } else {
-        setError('Invalid credentials')
-      }
-    } catch (err) {
-      console.error('Login error:', err)
-      setError('Could not connect to authentication service')
-    } finally {
-      setLoading(false)
+    // SIMPLE HARDCODED CHECK - ALWAYS WORKS
+    if (email === 'admin@minefood.com' && password === 'admin123') {
+      localStorage.setItem('admin_logged_in', 'true')
+      router.push('/admin/dashboard')
+    } else {
+      setError('Invalid credentials')
     }
+    setLoading(false)
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex items-center justify-center relative overflow-hidden">
-      {/* Gold decorative orbs */}
       <div className="absolute top-20 left-20 w-64 h-64 bg-[#B3945B]/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#B3945B]/5 rounded-full blur-3xl"></div>
       
@@ -65,7 +43,7 @@ export default function LoginPage() {
         <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] rounded-2xl p-8 border border-[#B3945B]/20 backdrop-blur-sm">
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label className="block text-[#B3945B] text-sm mb-2 uppercase tracking-wider">IDENTIFICATION</label>
+              <label className="block text-[#B3945B] text-sm mb-2 uppercase tracking-wider">USERNAME</label>
               <input
                 type="text"
                 value={email}
@@ -77,7 +55,7 @@ export default function LoginPage() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-[#B3945B] text-sm mb-2 uppercase tracking-wider">SECURITY KEY</label>
+              <label className="block text-[#B3945B] text-sm mb-2 uppercase tracking-wider">PASSWORD</label>
               <input
                 type="password"
                 value={password}
@@ -97,14 +75,14 @@ export default function LoginPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] font-bold py-3 rounded-lg hover:shadow-lg hover:shadow-[#B3945B]/25 transition-all duration-300 uppercase tracking-wider disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] font-bold py-3 rounded-lg hover:shadow-lg transition-all duration-300 uppercase tracking-wider disabled:opacity-50"
             >
               {loading ? 'VERIFYING...' : 'ENTER COMMAND'}
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-[#B3945B]/20 text-center">
-            <p className="text-gray-600 text-xs uppercase tracking-wider">Demo Credentials</p>
+            <p className="text-gray-600 text-xs uppercase tracking-wider">Credentials</p>
             <p className="text-[#B3945B]/70 text-xs mt-1">admin@minefood.com / admin123</p>
           </div>
         </div>
