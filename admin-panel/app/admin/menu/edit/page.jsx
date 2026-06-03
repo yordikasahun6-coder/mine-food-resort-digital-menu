@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import MultiImageUpload from '@/components/admin/MultiImageUpload'
 
-export default function EditItemPage() {
+// Inner component that uses useSearchParams
+function EditItemForm() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const router = useRouter()
@@ -126,7 +127,10 @@ export default function EditItemPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] p-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <div className="w-16 h-px bg-[#B3945B] mb-4"></div>
+          <div className="flex items-center gap-4 mb-4">
+            <button onClick={() => router.back()} className="text-[#B3945B] hover:text-[#E8C870] transition">← BACK</button>
+            <div className="w-16 h-px bg-[#B3945B] flex-1"></div>
+          </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#E8C870] to-[#B3945B] bg-clip-text text-transparent">
             EDIT MENU ITEM
           </h1>
@@ -134,175 +138,81 @@ export default function EditItemPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Dish Name */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DISH NAME *</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-              required
-            />
+            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" required />
           </div>
 
-          {/* Price */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">PRICE (BIRR) *</label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.price}
-              onChange={(e) => setFormData({...formData, price: e.target.value})}
-              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-              required
-            />
+            <input type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" required />
           </div>
 
-          {/* Item Type Buttons */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">ITEM TYPE *</label>
             <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => handleItemTypeChange('food')}
-                className={`flex-1 py-3 rounded-lg font-bold transition ${
-                  formData.item_type === 'food'
-                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] shadow-lg'
-                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
-                }`}
-              >
-                🍽️ FOOD
-              </button>
-              <button
-                type="button"
-                onClick={() => handleItemTypeChange('drinks')}
-                className={`flex-1 py-3 rounded-lg font-bold transition ${
-                  formData.item_type === 'drinks'
-                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] shadow-lg'
-                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
-                }`}
-              >
-                🍷 DRINKS
-              </button>
-              <button
-                type="button"
-                onClick={() => handleItemTypeChange('both')}
-                className={`flex-1 py-3 rounded-lg font-bold transition ${
-                  formData.item_type === 'both'
-                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] shadow-lg'
-                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
-                }`}
-              >
-                🍽️🍷 BOTH
-              </button>
+              <button type="button" onClick={() => handleItemTypeChange('food')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'food' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍽️ FOOD</button>
+              <button type="button" onClick={() => handleItemTypeChange('drinks')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'drinks' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍷 DRINKS</button>
+              <button type="button" onClick={() => handleItemTypeChange('both')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'both' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍽️🍷 BOTH</button>
             </div>
           </div>
 
-         {/* Estimated Time */}
-<div>
-  <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
-  <input
-    type="number"
-    placeholder="e.g., 15"
-    value={formData.estimated_time === 15 ? '' : formData.estimated_time}
-    onChange={(e) => setFormData({...formData, estimated_time: e.target.value ? parseInt(e.target.value) : ''})}
-    className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-    min="1"
-    max="60"
-  />
-  <p className="text-gray-500 text-xs mt-1">Leave empty for default (15 minutes)</p>
-</div>
-
-          {/* Spice Level */}
           <div>
-            <label className="block text-[#B3945B] text-sm mb-2">🌶️ SPICE LEVEL</label>
-            <select
-              value={formData.spice_level}
-              onChange={(e) => setFormData({...formData, spice_level: e.target.value})}
-              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-            >
-              <option value="none">None</option>
-              <option value="mild">Mild</option>
-              <option value="medium">Medium</option>
-              <option value="hot">Hot</option>
-            </select>
+            <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
+            <input type="number" value={formData.estimated_time || 15} onChange={(e) => setFormData({...formData, estimated_time: parseInt(e.target.value) || 15})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" min="1" max="60" />
           </div>
 
-          {/* Multi-Image Upload */}
+          {formData.item_type === 'food' && (
+            <div>
+              <label className="block text-[#B3945B] text-sm mb-2">🌶️ SPICE LEVEL</label>
+              <select value={formData.spice_level} onChange={(e) => setFormData({...formData, spice_level: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white">
+                <option value="none">None</option>
+                <option value="mild">Mild</option>
+                <option value="medium">Medium</option>
+                <option value="hot">Hot</option>
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">📸 DISH IMAGES</label>
-            <MultiImageUpload 
-              onImagesChange={(images) => setFormData({...formData, images: images})}
-              currentImages={formData.images}
-            />
+            <MultiImageUpload onImagesChange={(images) => setFormData({...formData, images: images})} currentImages={formData.images} />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DESCRIPTION</label>
-            <textarea
-              placeholder={getDefaultDescription(formData.item_type)}
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-              rows="4"
-            />
+            <textarea placeholder={getDefaultDescription(formData.item_type)} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" rows="4" />
           </div>
 
-          {/* Featured & Available */}
           <div className="flex gap-6">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.is_featured}
-                onChange={(e) => setFormData({...formData, is_featured: e.target.checked})}
-                className="mr-2 accent-[#B3945B]"
-              />
-              <span className="text-white">⭐ Featured Item</span>
-            </label>
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.is_available}
-                onChange={(e) => setFormData({...formData, is_available: e.target.checked})}
-                className="mr-2 accent-[#B3945B]"
-              />
-              <span className="text-white">✓ Available</span>
-            </label>
+            <label className="flex items-center"><input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} className="mr-2" /><span className="text-white">⭐ Featured Item</span></label>
+            <label className="flex items-center"><input type="checkbox" checked={formData.is_available} onChange={(e) => setFormData({...formData, is_available: e.target.checked})} className="mr-2" /><span className="text-white">✓ Available</span></label>
           </div>
 
-          {/* Images Preview */}
           {formData.images.length > 0 && (
             <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#B3945B]/20">
               <p className="text-[#B3945B] text-sm mb-2">📷 IMAGES ({formData.images.length}):</p>
               <div className="flex gap-2 overflow-x-auto">
-                {formData.images.map((img, idx) => (
-                  <img key={idx} src={img} alt={`Preview ${idx + 1}`} className="w-16 h-16 object-cover rounded-lg" />
-                ))}
+                {formData.images.map((img, idx) => <img key={idx} src={img} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />)}
               </div>
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex gap-4 pt-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] font-bold px-8 py-3 rounded-lg hover:shadow-lg transition disabled:opacity-50"
-            >
-              {saving ? 'SAVING...' : 'UPDATE ITEM'}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg hover:bg-[#B3945B]/10 transition"
-            >
-              CANCEL
-            </button>
+            <button type="submit" disabled={saving} className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black font-bold px-8 py-3 rounded-lg">{saving ? 'SAVING...' : 'UPDATE ITEM'}</button>
+            <button type="button" onClick={() => router.back()} className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg">CANCEL</button>
           </div>
         </form>
       </div>
     </div>
+  )
+}
+
+// Main export with Suspense to handle useSearchParams
+export default function EditItemPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="text-[#B3945B]">Loading...</div></div>}>
+      <EditItemForm />
+    </Suspense>
   )
 }
