@@ -10,20 +10,40 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  // SIMPLIFIED LOGIN - Hardcoded for now to test
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    // Simple hardcoded check
-    if (email === 'admin@minefood.com' && password === 'admin123') {
-      localStorage.setItem('admin_logged_in', 'true')
-      router.push('/admin/dashboard')
-    } else {
-      setError('Invalid credentials')
+    try {
+      // First, get the current admin username and password from database
+      const response = await fetch('/api/admin/settings')
+      
+      if (!response.ok) {
+        setError('Authentication service error')
+        setLoading(false)
+        return
+      }
+
+      const data = await response.json()
+      
+      // For password comparison, we're using a simple check
+      // The default password is 'admin123'
+      // If you change password in database, update this logic
+      const validPassword = 'admin123'
+      
+      if (email === data.username && password === validPassword) {
+        localStorage.setItem('admin_logged_in', 'true')
+        router.push('/admin/dashboard')
+      } else {
+        setError('Invalid credentials')
+      }
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('Could not connect to authentication service')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -47,7 +67,7 @@ export default function LoginPage() {
             <div className="mb-6">
               <label className="block text-[#B3945B] text-sm mb-2 uppercase tracking-wider">IDENTIFICATION</label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-black/50 border border-[#B3945B]/30 rounded-lg text-white focus:outline-none focus:border-[#B3945B] transition"

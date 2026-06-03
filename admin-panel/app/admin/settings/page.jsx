@@ -8,6 +8,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState({ text: '', type: '' })
+  const [currentUsername, setCurrentUsername] = useState('')
   const [formData, setFormData] = useState({
     currentUsername: '',
     currentPassword: '',
@@ -20,8 +21,24 @@ export default function SettingsPage() {
     const isLoggedIn = localStorage.getItem('admin_logged_in')
     if (!isLoggedIn) {
       router.push('/admin/login')
+      return
     }
+    
+    // Fetch current username from database
+    fetchCurrentUsername()
   }, [])
+
+  const fetchCurrentUsername = async () => {
+    try {
+      const response = await fetch('/api/admin/settings')
+      const data = await response.json()
+      if (response.ok) {
+        setCurrentUsername(data.username)
+      }
+    } catch (error) {
+      console.error('Error fetching username:', error)
+    }
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -36,14 +53,12 @@ export default function SettingsPage() {
     setLoading(true)
     setMessage({ text: '', type: '' })
 
-    // Validate new passwords match
     if (formData.newPassword !== formData.confirmPassword) {
       setMessage({ text: 'New passwords do not match', type: 'error' })
       setLoading(false)
       return
     }
 
-    // Validate new password length
     if (formData.newPassword && formData.newPassword.length < 6) {
       setMessage({ text: 'Password must be at least 6 characters', type: 'error' })
       setLoading(false)
@@ -51,23 +66,31 @@ export default function SettingsPage() {
     }
 
     try {
-      // In a real app, this would call an API to update credentials
-      // For now, save to localStorage
-      if (formData.newUsername) {
-        localStorage.setItem('admin_username', formData.newUsername)
-      }
-      if (formData.newPassword) {
-        localStorage.setItem('admin_password', formData.newPassword)
-      }
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentUsername: formData.currentUsername,
+          currentPassword: formData.currentPassword,
+          newUsername: formData.newUsername,
+          newPassword: formData.newPassword
+        })
+      })
 
-      setMessage({ text: 'Settings updated! Please login again.', type: 'success' })
-      
-      setTimeout(() => {
-        localStorage.removeItem('admin_logged_in')
-        router.push('/admin/login')
-      }, 2000)
+      const data = await response.json()
+
+      if (response.ok) {
+        setMessage({ text: '✅ Settings updated! Please login again.', type: 'success' })
+        setTimeout(() => {
+          localStorage.removeItem('admin_logged_in')
+          router.push('/admin/login')
+        }, 2000)
+      } else {
+        setMessage({ text: data.error || 'Failed to update settings', type: 'error' })
+      }
     } catch (error) {
-      setMessage({ text: 'Failed to update settings', type: 'error' })
+      console.error('Settings error:', error)
+      setMessage({ text: 'An error occurred. Please try again.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -91,17 +114,33 @@ export default function SettingsPage() {
           <p className="text-gray-500 mt-1">Update your login credentials</p>
         </div>
 
+        {/* Current Username Display */}
+        <div className="bg-[#1A1A1A] rounded-xl border border-[#B3945B]/20 p-4 mb-6">
+          <p className="text-gray-400 text-sm">Current Username in Database:</p>
+          <p className="text-[#B3945B] font-semibold">{currentUsername || 'Loading...'}</p>
+        </div>
+
         <div className="bg-[#1A1A1A] rounded-xl border border-[#B3945B]/20 p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* VERIFY IDENTITY */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#B3945B]/20"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-[#1A1A1A] text-[#B3945B]">VERIFY IDENTITY</span>
+              </div>
+            </div>
+
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">CURRENT USERNAME *</label>
               <input
-                type="email"
+                type="text"
                 name="currentUsername"
                 value={formData.currentUsername}
                 onChange={handleChange}
                 placeholder="Enter current username"
-                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white"
+                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white focus:border-[#B3945B] transition"
                 required
               />
             </div>
@@ -114,23 +153,32 @@ export default function SettingsPage() {
                 value={formData.currentPassword}
                 onChange={handleChange}
                 placeholder="Enter current password"
-                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white"
+                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white focus:border-[#B3945B] transition"
                 required
               />
             </div>
 
-            <div className="border-t border-[#B3945B]/20 my-4"></div>
+            {/* NEW CREDENTIALS */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#B3945B]/20"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-[#1A1A1A] text-[#B3945B]">NEW CREDENTIALS</span>
+              </div>
+            </div>
 
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">NEW USERNAME (Optional)</label>
               <input
-                type="email"
+                type="text"
                 name="newUsername"
                 value={formData.newUsername}
                 onChange={handleChange}
                 placeholder="Enter new username"
-                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white"
+                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white focus:border-[#B3945B] transition"
               />
+              <p className="text-gray-500 text-xs mt-1">Leave empty to keep current</p>
             </div>
 
             <div>
@@ -141,8 +189,9 @@ export default function SettingsPage() {
                 value={formData.newPassword}
                 onChange={handleChange}
                 placeholder="Enter new password"
-                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white"
+                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white focus:border-[#B3945B] transition"
               />
+              <p className="text-gray-500 text-xs mt-1">Minimum 6 characters. Leave empty to keep current</p>
             </div>
 
             <div>
@@ -153,7 +202,7 @@ export default function SettingsPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm new password"
-                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white"
+                className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white focus:border-[#B3945B] transition"
               />
             </div>
 
@@ -191,7 +240,8 @@ export default function SettingsPage() {
 
           <div className="mt-4 pt-4 border-t border-[#B3945B]/20">
             <p className="text-gray-500 text-xs text-center">
-              ⚠️ You will be logged out after saving changes.
+              ⚠️ You will be logged out after saving changes.<br/>
+              Login with your new credentials.
             </p>
           </div>
         </div>
