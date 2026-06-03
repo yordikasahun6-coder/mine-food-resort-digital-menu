@@ -1,10 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabase'
 
-// GET - Fetch current admin username
 export async function GET() {
   const { data, error } = await supabaseAdmin
     .from('admin_settings')
-    .select('username')
+    .select('username, password')
     .eq('id', 1)
     .single()
 
@@ -12,7 +11,7 @@ export async function GET() {
     return Response.json({ error: error.message }, { status: 500 })
   }
 
-  return Response.json({ username: data.username })
+  return Response.json({ username: data.username, password: data.password })
 }
 
 // PUT - Update admin credentials

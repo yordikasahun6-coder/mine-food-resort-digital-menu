@@ -10,20 +10,33 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setLoading(true)
+  setError('')
 
-    // SIMPLE HARDCODED CHECK - ALWAYS WORKS
-    if (email === 'admin@minefood.com' && password === 'admin123') {
-      localStorage.setItem('admin_logged_in', 'true')
-      router.push('/admin/dashboard')
+  try {
+    const response = await fetch('/api/admin/settings')
+    const data = await response.json()
+    
+    if (response.ok) {
+      // Compare with plain text password from database
+      if (email === data.username && password === data.password) {
+        localStorage.setItem('admin_logged_in', 'true')
+        router.push('/admin/dashboard')
+      } else {
+        setError('Invalid credentials')
+      }
     } else {
-      setError('Invalid credentials')
+      setError('Authentication error')
     }
+  } catch (err) {
+    console.error('Login error:', err)
+    setError('Could not connect to authentication service')
+  } finally {
     setLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] flex items-center justify-center relative overflow-hidden">
