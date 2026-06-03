@@ -26,24 +26,30 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Auto-cycle images every 3 seconds
-  useEffect(() => {
-    if (menuItems.length === 0) return
-    const intervals = {}
-    menuItems.forEach(item => {
-      if (item.images && item.images.length > 1) {
-        intervals[item.id] = setInterval(() => {
-          setAnimatingImage(prev => ({ ...prev, [item.id]: 'image-crossfade' }))
-          setTimeout(() => setAnimatingImage(prev => ({ ...prev, [item.id]: '' })), 500)
-          setCurrentImageIndex(prev => ({
-            ...prev,
-            [item.id]: ((prev[item.id] || 0) + 1) % item.images.length
-          }))
-        }, 3000)
-      }
-    })
-    return () => Object.values(intervals).forEach(clearInterval)
-  }, [menuItems])
+// Auto-cycle images INDIVIDUALLY for each item
+useEffect(() => {
+  if (menuItems.length === 0) return
+  
+  const intervals = {}
+  menuItems.forEach(item => {
+    if (item.images && item.images.length > 1) {
+      // Random interval between 2-5 seconds for each item
+      const randomInterval = Math.floor(Math.random() * 3000) + 2000 // 2000-5000ms
+      intervals[item.id] = setInterval(() => {
+        setAnimatingImage(prev => ({ ...prev, [item.id]: 'image-crossfade' }))
+        setTimeout(() => setAnimatingImage(prev => ({ ...prev, [item.id]: '' })), 500)
+        setCurrentImageIndex(prev => ({
+          ...prev,
+          [item.id]: ((prev[item.id] || 0) + 1) % item.images.length
+        }))
+      }, randomInterval)
+    }
+  })
+  
+  return () => {
+    Object.values(intervals).forEach(clearInterval)
+  }
+}, [menuItems])
 
   const handleScroll = () => setShowBackToTop(window.scrollY > 500)
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
