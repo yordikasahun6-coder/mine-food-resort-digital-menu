@@ -64,28 +64,6 @@ export async function POST(request) {
   return Response.json(data[0])
 }
 
-// GET single item by ID
-export async function GET_ITEM(request) {
-  const { searchParams } = new URL(request.url)
-  const id = searchParams.get('id')
-  
-  if (!id) {
-    return Response.json({ error: 'ID is required' }, { status: 400 })
-  }
-  
-  const { data, error } = await supabaseAdmin
-    .from('menu_items')
-    .select('*')
-    .eq('id', id)
-    .single()
-  
-  if (error) {
-    return Response.json({ error: error.message }, { status: 500 })
-  }
-  
-  return Response.json(data)
-}
-
 // PUT - Update an item
 export async function PUT(request) {
   const { searchParams } = new URL(request.url)
@@ -124,18 +102,38 @@ export async function DELETE(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
   
+  console.log('DELETE called for ID:', id)
+  
   if (!id) {
-    return Response.json({ error: 'ID is required' }, { status: 400 })
+    return Response.json({ error: 'No ID provided' }, { status: 400 })
   }
   
+  // Simple delete without select
   const { error } = await supabaseAdmin
     .from('menu_items')
     .delete()
     .eq('id', id)
   
   if (error) {
+    console.error('Delete error:', error)
     return Response.json({ error: error.message }, { status: 500 })
   }
   
-  return Response.json({ success: true, message: 'Item deleted successfully' })
+  // Verify the item is gone
+  const { data: check, error: checkError } = await supabaseAdmin
+    .from('menu_items')
+    .select('id')
+    .eq('id', id)
+    .single()
+  
+  if (checkError && checkError.code === 'PGRST116') {
+    // PGRST116 means no rows returned - item is deleted
+    console.log('Item successfully deleted:', id)
+    return Response.json({ success: true, deleted: true })
+  } else if (check) {
+    console.log('Item still exists! Delete failed')
+    return Response.json({ error: 'Delete failed - item still exists' }, { status: 500 })
+  }
+  
+  return Response.json({ success: true, deleted: true })
 }

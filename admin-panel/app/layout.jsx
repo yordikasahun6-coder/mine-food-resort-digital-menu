@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A]">
         {children}
       </body>

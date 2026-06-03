@@ -1,19 +1,14 @@
 ﻿import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+// Use anon key for local testing
+const supabaseUrl = 'https://cgtlikaqzbamslwgcxlj.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndGxpa2FxemJhbXNsd2djeGxqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMzQ1MzQsImV4cCI6MjA5NTgxMDUzNH0.3udipH2tOhpw-5y_XIMml2vKj2hg2NdVaHar98s56jI'
 
-// Don't throw error, just log warning
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.warn('⚠️ Missing Supabase environment variables')
-  console.warn('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ Missing')
-  console.warn('SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✅ Set' : '❌ Missing')
-}
-
-// Create admin client (will fail gracefully if variables missing)
-export const supabaseAdmin = createClient(supabaseUrl || '', supabaseServiceKey || '', {
+export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
   }
 })
+
+console.log('✅ Supabase client initialized with anon key')

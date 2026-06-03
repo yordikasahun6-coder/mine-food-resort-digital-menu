@@ -1,6 +1,6 @@
 ﻿@import "tailwindcss";
 
-/* Theme Variables - Dark Mode (Default) */
+/* Theme Variables */
 :root {
   --bg-primary: #0A0A0A;
   --bg-secondary: #1A1A1A;
@@ -10,106 +10,24 @@
   --border-color: rgba(179, 148, 91, 0.2);
   --gold: #B3945B;
   --gold-light: #E8C870;
-  --input-bg: #1A1A1A;
 }
 
-/* Light Mode */
 .light-mode {
-  --bg-primary: #F8F8F4 !important;
-  --bg-secondary: #FFFFFF !important;
-  --bg-card: #FFFFFF !important;
-  --text-primary: #1A1A1A !important;
-  --text-secondary: #6B7280 !important;
-  --border-color: rgba(179, 148, 91, 0.3) !important;
-  --gold: #B3945B !important;
-  --gold-light: #D4A85C !important;
-  --input-bg: #F3F3F0 !important;
-}
-
-/* Light mode button styles */
-.light-mode button:not(.bg-gradient-to-r) {
-  background-color: #E8E8E4 !important;
-  color: #1A1A1A !important;
-  border-color: #B3945B !important;
-}
-
-.light-mode button:not(.bg-gradient-to-r):hover {
-  background-color: #B3945B !important;
-  color: white !important;
-}
-
-/* Apply to ALL elements */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  --bg-primary: #F8F8F4;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B7280;
+  --border-color: rgba(179, 148, 91, 0.25);
+  --gold: #B3945B;
+  --gold-light: #D4A85C;
 }
 
 body {
-  background: var(--bg-primary) !important;
-  color: var(--text-primary) !important;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
-}
-
-/* Force all backgrounds */
-div, section, main, article, header, footer, nav, aside {
-  background-color: transparent;
-}
-
-/* Force specific background colors */
-.bg-gradient-to-br,
-.bg-gradient-to-b,
-.bg-gradient-to-r {
-  background: var(--bg-primary) !important;
-}
-
-.bg-\[\#1A1A1A\],
-.bg-\[\#0F0F0F\] {
-  background-color: var(--bg-card) !important;
-}
-
-/* Force text colors */
-.text-white,
-.text-gray-300,
-h1, h2, h3, h4, p, span, label, .text-gray-400, .text-gray-500 {
-  color: var(--text-primary) !important;
-}
-
-.text-gray-400, .text-gray-500, .placeholder-gray-500 {
-  color: var(--text-secondary) !important;
-}
-
-/* Force border colors */
-.border,
-.border-\[\#B3945B\]\/20,
-.border-\[\#B3945B\]\/30 {
-  border-color: var(--border-color) !important;
-}
-
-/* Force gold colors */
-.text-\[\#B3945B\],
-.text-\[var\(--gold\)\] {
-  color: var(--gold) !important;
-}
-
-.bg-\[\#B3945B\],
-.bg-\[var\(--gold\)\] {
-  background-color: var(--gold) !important;
-}
-
-/* Input fields */
-input, textarea, select {
-  background-color: var(--input-bg) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Card backgrounds */
-.group, .rounded-2xl, .rounded-xl, .rounded-lg {
-  background-color: var(--bg-card) !important;
-}
-
-/* Video overlay */
-.absolute.inset-0.bg-gradient-to-b {
-  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, var(--bg-primary) 100%) !important;
 }
 
 /* Custom scrollbar */
@@ -133,6 +51,10 @@ input, textarea, select {
 ::selection {
   background: var(--gold);
   color: var(--bg-primary);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 /* ============================================
@@ -304,46 +226,4 @@ input, textarea, select {
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
-}
-
-/* Ensure hero text always visible */
-.gold-shimmer-text {
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 25%, var(--gold-light) 50%, var(--gold) 75%, var(--gold-light) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: goldShimmer 3s linear infinite;
-}
-
-.light-mode .gold-shimmer-text {
-  background: linear-gradient(135deg, #D4A85C 0%, #B3945B 25%, #D4A85C 50%, #B3945B 75%, #D4A85C 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-
-/* Force title to be visible */
-.gold-shimmer-text {
-  background: linear-gradient(135deg, #E8C870 0%, #B3945B 50%, #E8C870 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  color: #B3945B !important;
-  display: inline-block !important;
-}
-
-
-/* Floating animation for gold lines */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
 }

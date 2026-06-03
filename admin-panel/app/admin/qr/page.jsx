@@ -7,18 +7,33 @@ export default function QRPage() {
   const [qrUrl, setQrUrl] = useState('')
   const [qrType, setQrType] = useState('table')
 
+  // Get the customer menu URL (replace with your actual deployed URL)
+  const CUSTOMER_URL = 'https://mine-food-customer-menu.vercel.app'
+
   function generateTableQR() {
-    if (!tableNumber) return
+    if (!tableNumber) {
+      alert('Please enter a table number')
+      return
+    }
     
-    const customerUrl = `https://mine-food-customer-menu.vercel.app?table=${tableNumber}`
+    const customerUrl = `${CUSTOMER_URL}?table=${tableNumber}`
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(customerUrl)}`
     setQrUrl(qrCodeUrl)
   }
 
   function generateAdminQR() {
-    const adminUrl = `https://mine-food-admin-prod.vercel.app/admin/login`
+    const adminUrl = `${window.location.origin}/admin/login`
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(adminUrl)}`
     setQrUrl(qrCodeUrl)
+  }
+
+  function downloadQR() {
+    if (qrUrl) {
+      const link = document.createElement('a')
+      link.href = qrUrl
+      link.download = qrType === 'table' ? `table-${tableNumber}-qr.png` : 'master-admin-qr.png'
+      link.click()
+    }
   }
 
   return (
@@ -49,7 +64,7 @@ export default function QRPage() {
             }}
             className={`flex-1 py-3 rounded-lg font-bold transition ${
               qrType === 'table'
-                ? 'bg-[#B3945B] text-black'
+                ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black'
                 : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
             }`}
           >
@@ -63,7 +78,7 @@ export default function QRPage() {
             }}
             className={`flex-1 py-3 rounded-lg font-bold transition ${
               qrType === 'admin'
-                ? 'bg-[#B3945B] text-black'
+                ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black'
                 : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
             }`}
           >
@@ -80,6 +95,7 @@ export default function QRPage() {
                 value={tableNumber}
                 onChange={(e) => setTableNumber(e.target.value)}
                 className="w-full p-3 rounded-lg bg-[#0A0A0A] border border-[#B3945B]/30 text-white mb-4"
+                min="1"
               />
               <button
                 onClick={generateTableQR}
@@ -99,18 +115,19 @@ export default function QRPage() {
                 onClick={generateAdminQR}
                 className="w-full bg-[#B3945B] text-black font-bold py-3 rounded-lg hover:shadow-lg transition"
               >
-                GENERATE MASTER QR
+                REGENERATE MASTER QR
               </button>
             </div>
           )}
 
           {qrUrl && (
             <div className="mt-6 text-center">
-              <img src={qrUrl} alt="QR Code" className="mx-auto mb-4" />
+              <img src={qrUrl} alt="QR Code" className="mx-auto mb-4 bg-white p-2 rounded-lg" />
               {qrType === 'table' ? (
                 <>
                   <p className="text-[#B3945B] font-bold text-lg">TABLE #{tableNumber}</p>
                   <p className="text-gray-400 text-xs mt-2">Scan to view menu</p>
+                  <p className="text-gray-500 text-xs mt-1">{CUSTOMER_URL}?table={tableNumber}</p>
                 </>
               ) : (
                 <>
@@ -118,6 +135,12 @@ export default function QRPage() {
                   <p className="text-gray-400 text-xs mt-2">Scan for admin access</p>
                 </>
               )}
+              <button
+                onClick={downloadQR}
+                className="mt-4 w-full bg-[#B3945B]/20 text-[#B3945B] py-2 rounded-lg hover:bg-[#B3945B]/40 transition"
+              >
+                📥 DOWNLOAD QR CODE
+              </button>
             </div>
           )}
         </div>
@@ -129,6 +152,7 @@ export default function QRPage() {
             <li>• <strong>TABLE QR:</strong> For customers to view menu</li>
             <li>• <strong>MASTER QR:</strong> For you to access admin panel</li>
             <li>• Print and place on tables / office desk</li>
+            <li>• Customers scan with phone camera</li>
           </ul>
         </div>
       </div>

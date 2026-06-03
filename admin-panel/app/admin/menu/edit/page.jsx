@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import MultiImageUpload from '@/components/admin/MultiImageUpload'
 
-// Inner component that uses useSearchParams
-function EditItemForm() {
+export default function EditItemPage() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const router = useRouter()
@@ -59,7 +58,7 @@ function EditItemForm() {
       setFormData({
         name: data.name || '',
         price: data.price || '',
-        description: data.description || getDefaultDescription(data.item_type || 'food'),
+        description: data.description || '',
         images: data.images || (data.image_url ? [data.image_url] : []),
         item_type: data.item_type || 'food',
         estimated_time: data.estimated_time || 15,
@@ -135,6 +134,7 @@ function EditItemForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Dish Name */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DISH NAME *</label>
             <input
@@ -146,6 +146,7 @@ function EditItemForm() {
             />
           </div>
 
+          {/* Price */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">PRICE (BIRR) *</label>
             <input
@@ -158,6 +159,7 @@ function EditItemForm() {
             />
           </div>
 
+          {/* Item Type Buttons */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">ITEM TYPE *</label>
             <div className="flex gap-4">
@@ -197,34 +199,37 @@ function EditItemForm() {
             </div>
           </div>
 
+         {/* Estimated Time */}
+<div>
+  <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
+  <input
+    type="number"
+    placeholder="e.g., 15"
+    value={formData.estimated_time === 15 ? '' : formData.estimated_time}
+    onChange={(e) => setFormData({...formData, estimated_time: e.target.value ? parseInt(e.target.value) : ''})}
+    className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+    min="1"
+    max="60"
+  />
+  <p className="text-gray-500 text-xs mt-1">Leave empty for default (15 minutes)</p>
+</div>
+
+          {/* Spice Level */}
           <div>
-            <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
-            <input
-              type="number"
-              value={formData.estimated_time}
-              onChange={(e) => setFormData({...formData, estimated_time: parseInt(e.target.value)})}
+            <label className="block text-[#B3945B] text-sm mb-2">🌶️ SPICE LEVEL</label>
+            <select
+              value={formData.spice_level}
+              onChange={(e) => setFormData({...formData, spice_level: e.target.value})}
               className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-              min="1"
-              max="60"
-            />
+            >
+              <option value="none">None</option>
+              <option value="mild">Mild</option>
+              <option value="medium">Medium</option>
+              <option value="hot">Hot</option>
+            </select>
           </div>
 
-          {formData.item_type === 'food' && (
-            <div>
-              <label className="block text-[#B3945B] text-sm mb-2">🌶️ SPICE LEVEL</label>
-              <select
-                value={formData.spice_level}
-                onChange={(e) => setFormData({...formData, spice_level: e.target.value})}
-                className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
-              >
-                <option value="none">None</option>
-                <option value="mild">Mild</option>
-                <option value="medium">Medium</option>
-                <option value="hot">Hot</option>
-              </select>
-            </div>
-          )}
-
+          {/* Multi-Image Upload */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">📸 DISH IMAGES</label>
             <MultiImageUpload 
@@ -233,6 +238,7 @@ function EditItemForm() {
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DESCRIPTION</label>
             <textarea
@@ -244,27 +250,29 @@ function EditItemForm() {
             />
           </div>
 
+          {/* Featured & Available */}
           <div className="flex gap-6">
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={formData.is_featured}
                 onChange={(e) => setFormData({...formData, is_featured: e.target.checked})}
-                className="mr-2"
+                className="mr-2 accent-[#B3945B]"
               />
               <span className="text-white">⭐ Featured Item</span>
             </label>
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={formData.is_available}
                 onChange={(e) => setFormData({...formData, is_available: e.target.checked})}
-                className="mr-2"
+                className="mr-2 accent-[#B3945B]"
               />
               <span className="text-white">✓ Available</span>
             </label>
           </div>
 
+          {/* Images Preview */}
           {formData.images.length > 0 && (
             <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#B3945B]/20">
               <p className="text-[#B3945B] text-sm mb-2">📷 IMAGES ({formData.images.length}):</p>
@@ -276,18 +284,19 @@ function EditItemForm() {
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
               disabled={saving}
-              className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] font-bold px-8 py-3 rounded-lg"
+              className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-[#0A0A0A] font-bold px-8 py-3 rounded-lg hover:shadow-lg transition disabled:opacity-50"
             >
               {saving ? 'SAVING...' : 'UPDATE ITEM'}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg"
+              className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg hover:bg-[#B3945B]/10 transition"
             >
               CANCEL
             </button>
@@ -295,14 +304,5 @@ function EditItemForm() {
         </form>
       </div>
     </div>
-  )
-}
-
-// Main component with Suspense boundary
-export default function EditItemPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="text-[#B3945B]">Loading...</div></div>}>
-      <EditItemForm />
-    </Suspense>
   )
 }
