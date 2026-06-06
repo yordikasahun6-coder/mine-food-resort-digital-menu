@@ -50,6 +50,8 @@ export async function PUT(request) {
     const id = searchParams.get('id')
     const body = await request.json()
     
+    console.log('PUT request body:', body) // Debug log
+    
     if (!id) {
       return new Response(JSON.stringify({ error: 'ID is required' }), {
         status: 400,
@@ -65,6 +67,7 @@ export async function PUT(request) {
         description: body.description || '',
         images: body.images || [],
         item_type: body.item_type || 'food',
+        category_id: body.category_id || null,  // ← ADD THIS LINE
         estimated_time: body.estimated_time || 15,
         is_featured: body.is_featured || false,
         is_available: body.is_available !== false,
@@ -74,17 +77,20 @@ export async function PUT(request) {
       .select()
     
     if (error) {
+      console.error('Supabase update error:', error)
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       })
     }
     
+    console.log('Updated item with category_id:', data[0]?.category_id)
     return new Response(JSON.stringify(data[0]), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error) {
+    console.error('PUT catch error:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

@@ -37,9 +37,12 @@ export async function GET() {
   return Response.json(itemsWithRatings)
 }
 
+
 // POST - Add new item
 export async function POST(request) {
   const body = await request.json()
+  
+  console.log('Received POST data:', body) // Debug log
   
   const { data, error } = await supabaseAdmin
     .from('menu_items')
@@ -49,6 +52,7 @@ export async function POST(request) {
       description: body.description || '',
       images: body.images || [],
       item_type: body.item_type || 'food',
+      category_id: body.category_id || null,
       estimated_time: body.estimated_time || 15,
       is_featured: body.is_featured || false,
       is_available: body.is_available !== false,
@@ -58,17 +62,22 @@ export async function POST(request) {
     .select()
   
   if (error) {
+    console.error('Supabase error:', error)
     return Response.json({ error: error.message }, { status: 500 })
   }
   
+  console.log('Item saved with category_id:', data[0].category_id)
   return Response.json(data[0])
 }
+
 
 // PUT - Update an item
 export async function PUT(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
   const body = await request.json()
+  
+  console.log('Received PUT data:', body) // Debug log
   
   if (!id) {
     return Response.json({ error: 'ID is required' }, { status: 400 })
@@ -82,6 +91,7 @@ export async function PUT(request) {
       description: body.description || '',
       images: body.images || [],
       item_type: body.item_type || 'food',
+      category_id: body.category_id || null,
       estimated_time: body.estimated_time || 15,
       is_featured: body.is_featured || false,
       is_available: body.is_available !== false,
@@ -91,11 +101,13 @@ export async function PUT(request) {
     .select()
   
   if (error) {
+    console.error('Supabase error:', error)
     return Response.json({ error: error.message }, { status: 500 })
   }
   
   return Response.json(data[0])
 }
+
 
 // DELETE - Remove an item
 export async function DELETE(request) {

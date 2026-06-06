@@ -11,18 +11,26 @@ function EditItemForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [categories, setCategories] = useState([])
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     description: '',
     images: [],
     item_type: 'food',
+    category_id: '',
     estimated_time: 15,
     is_featured: false,
     is_available: true,
     spice_level: 'none'
   })
 
+  // Load categories when component mounts
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  // Load item data when id is available
   useEffect(() => {
     if (id) {
       loadItem()
@@ -30,6 +38,17 @@ function EditItemForm() {
       router.push('/admin/dashboard')
     }
   }, [id])
+
+  async function loadCategories() {
+    try {
+      const response = await fetch('/api/admin/categories')
+      const data = await response.json()
+      console.log('Categories loaded:', data)
+      setCategories(data)
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
+  }
 
   const getDefaultDescription = (type) => {
     if (type === 'food') {
@@ -56,12 +75,14 @@ function EditItemForm() {
       const response = await fetch(`/api/admin/menu/item?id=${id}`)
       if (!response.ok) throw new Error('Failed to load')
       const data = await response.json()
+      console.log('Loaded item data:', data)
       setFormData({
         name: data.name || '',
         price: data.price || '',
         description: data.description || '',
         images: data.images || (data.image_url ? [data.image_url] : []),
         item_type: data.item_type || 'food',
+        category_id: data.category_id || '',
         estimated_time: data.estimated_time || 15,
         is_featured: data.is_featured || false,
         is_available: data.is_available !== false,
@@ -94,6 +115,7 @@ function EditItemForm() {
           description: finalDescription,
           images: formData.images,
           item_type: formData.item_type,
+          category_id: formData.category_id || null,
           estimated_time: formData.estimated_time,
           is_featured: formData.is_featured,
           is_available: formData.is_available,
@@ -128,7 +150,12 @@ function EditItemForm() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <button onClick={() => router.back()} className="text-[#B3945B] hover:text-[#E8C870] transition">← BACK</button>
+<button 
+  onClick={() => router.push('/admin/dashboard')} 
+  className="text-[#B3945B] hover:text-[#E8C870] transition p-2 rounded-lg hover:bg-[#B3945B]/10"
+>
+  ← Back to Dashboard
+</button>            
             <div className="w-16 h-px bg-[#B3945B] flex-1"></div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#E8C870] to-[#B3945B] bg-clip-text text-transparent">
@@ -138,34 +165,109 @@ function EditItemForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Dish Name */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DISH NAME *</label>
-            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" required />
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+              required
+            />
           </div>
 
+          {/* Price */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">PRICE (BIRR) *</label>
-            <input type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" required />
+            <input
+              type="number"
+              step="0.01"
+              value={formData.price}
+              onChange={(e) => setFormData({...formData, price: e.target.value})}
+              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+              required
+            />
           </div>
 
+          {/* Item Type Buttons */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">ITEM TYPE *</label>
             <div className="flex gap-4">
-              <button type="button" onClick={() => handleItemTypeChange('food')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'food' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍽️ FOOD</button>
-              <button type="button" onClick={() => handleItemTypeChange('drinks')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'drinks' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍷 DRINKS</button>
-              <button type="button" onClick={() => handleItemTypeChange('both')} className={`flex-1 py-3 rounded-lg font-bold transition ${formData.item_type === 'both' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg' : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'}`}>🍽️🍷 BOTH</button>
+              <button
+                type="button"
+                onClick={() => handleItemTypeChange('food')}
+                className={`flex-1 py-3 rounded-lg font-bold transition ${
+                  formData.item_type === 'food'
+                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg'
+                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
+                }`}
+              >
+                🍽️ FOOD
+              </button>
+              <button
+                type="button"
+                onClick={() => handleItemTypeChange('drinks')}
+                className={`flex-1 py-3 rounded-lg font-bold transition ${
+                  formData.item_type === 'drinks'
+                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg'
+                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
+                }`}
+              >
+                🍷 DRINKS
+              </button>
+              <button
+                type="button"
+                onClick={() => handleItemTypeChange('both')}
+                className={`flex-1 py-3 rounded-lg font-bold transition ${
+                  formData.item_type === 'both'
+                    ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg'
+                    : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30'
+                }`}
+              >
+                🍽️🍷 BOTH
+              </button>
             </div>
           </div>
 
+          {/* Category Selection */}
           <div>
-            <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
-            <input type="number" value={formData.estimated_time || 15} onChange={(e) => setFormData({...formData, estimated_time: parseInt(e.target.value) || 15})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" min="1" max="60" />
+            <label className="block text-[#B3945B] text-sm mb-2">📂 CATEGORY</label>
+            <select
+              value={formData.category_id || ''}
+              onChange={(e) => setFormData({...formData, category_id: e.target.value})}
+              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+            >
+              <option value="">-- Select a category --</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            <p className="text-gray-500 text-xs mt-1">Categories can be managed in Category Manager</p>
           </div>
 
+          {/* Estimated Time */}
+          <div>
+            <label className="block text-[#B3945B] text-sm mb-2">⏱️ PREPARATION TIME (minutes)</label>
+            <input
+              type="number"
+              value={formData.estimated_time || 15}
+              onChange={(e) => setFormData({...formData, estimated_time: parseInt(e.target.value) || 15})}
+              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+              min="1"
+              max="60"
+            />
+          </div>
+
+          {/* Spice Level */}
           {formData.item_type === 'food' && (
             <div>
               <label className="block text-[#B3945B] text-sm mb-2">🌶️ SPICE LEVEL</label>
-              <select value={formData.spice_level} onChange={(e) => setFormData({...formData, spice_level: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white">
+              <select
+                value={formData.spice_level}
+                onChange={(e) => setFormData({...formData, spice_level: e.target.value})}
+                className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+              >
                 <option value="none">None</option>
                 <option value="mild">Mild</option>
                 <option value="medium">Medium</option>
@@ -174,33 +276,77 @@ function EditItemForm() {
             </div>
           )}
 
+          {/* Multi-Image Upload */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">📸 DISH IMAGES</label>
-            <MultiImageUpload onImagesChange={(images) => setFormData({...formData, images: images})} currentImages={formData.images} />
+            <MultiImageUpload 
+              onImagesChange={(images) => setFormData({...formData, images: images})}
+              currentImages={formData.images}
+            />
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-[#B3945B] text-sm mb-2">DESCRIPTION</label>
-            <textarea placeholder={getDefaultDescription(formData.item_type)} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white" rows="4" />
+            <textarea
+              placeholder={getDefaultDescription(formData.item_type)}
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              className="w-full p-3 rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white"
+              rows="4"
+            />
           </div>
 
+          {/* Featured & Available */}
           <div className="flex gap-6">
-            <label className="flex items-center"><input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} className="mr-2" /><span className="text-white">⭐ Featured Item</span></label>
-            <label className="flex items-center"><input type="checkbox" checked={formData.is_available} onChange={(e) => setFormData({...formData, is_available: e.target.checked})} className="mr-2" /><span className="text-white">✓ Available</span></label>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_featured}
+                onChange={(e) => setFormData({...formData, is_featured: e.target.checked})}
+                className="mr-2 accent-[#B3945B]"
+              />
+              <span className="text-white">⭐ Featured Item</span>
+            </label>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_available}
+                onChange={(e) => setFormData({...formData, is_available: e.target.checked})}
+                className="mr-2 accent-[#B3945B]"
+              />
+              <span className="text-white">✓ Available</span>
+            </label>
           </div>
 
+          {/* Images Preview */}
           {formData.images.length > 0 && (
             <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#B3945B]/20">
               <p className="text-[#B3945B] text-sm mb-2">📷 IMAGES ({formData.images.length}):</p>
               <div className="flex gap-2 overflow-x-auto">
-                {formData.images.map((img, idx) => <img key={idx} src={img} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />)}
+                {formData.images.map((img, idx) => (
+                  <img key={idx} src={img} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />
+                ))}
               </div>
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex gap-4 pt-4">
-            <button type="submit" disabled={saving} className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black font-bold px-8 py-3 rounded-lg">{saving ? 'SAVING...' : 'UPDATE ITEM'}</button>
-            <button type="button" onClick={() => router.back()} className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg">CANCEL</button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black font-bold px-8 py-3 rounded-lg hover:shadow-lg transition disabled:opacity-50"
+            >
+              {saving ? 'SAVING...' : 'UPDATE ITEM'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="border border-[#B3945B]/50 text-[#B3945B] px-8 py-3 rounded-lg hover:bg-[#B3945B]/10 transition"
+            >
+              CANCEL
+            </button>
           </div>
         </form>
       </div>
