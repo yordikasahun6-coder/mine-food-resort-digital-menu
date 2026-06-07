@@ -27,7 +27,7 @@ export default function AddItemPage() {
 
   async function loadCategories() {
     try {
-      const response = await fetch('/api/admin/categories')
+   const response = await fetch('/api/admin/categories')
       const data = await response.json()
       setCategories(data)
     } catch (error) {

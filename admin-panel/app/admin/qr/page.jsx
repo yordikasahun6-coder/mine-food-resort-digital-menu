@@ -8,7 +8,7 @@ export default function QRPage() {
   const [qrType, setQrType] = useState('table')
   const [isGenerating, setIsGenerating] = useState(false)
 
-  const CUSTOMER_URL = 'https://mine-food-customer-menu.vercel.app'
+  const CUSTOMER_URL = 'https://mine-food-resort-digital-menu.vercel.app'
 
   function generateTableQR() {
     if (!tableNumber) {
