@@ -46,24 +46,24 @@ export default function AddItemPage() {
     setFormData({ ...formData, item_type: newType, description: getDefaultDescription(newType) })
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    
-    const finalDescription = formData.description || getDefaultDescription(formData.item_type)
-    
-    const response = await fetch('/api/admin/menu', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...formData,
-        category_id: formData.category_id || null,
-        description: finalDescription,
-        price: parseFloat(formData.price),
-        estimated_time: formData.estimated_time ? parseInt(formData.estimated_time) : 15,
-        sort_order: 999
-      })
+async function handleSubmit(e) {
+  e.preventDefault()
+  setLoading(true)
+  
+  const finalDescription = formData.description || getDefaultDescription(formData.item_type)
+  
+  const response = await fetch('/api/admin/menu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...formData,
+      category_id: formData.category_id || null,
+      description: finalDescription,
+      price: parseFloat(formData.price),
+      estimated_time: formData.estimated_time ? parseInt(formData.estimated_time) : null,
+      sort_order: 999
     })
+  })
     
     if (response.ok) {
       alert('✅ Item added successfully!')
@@ -268,26 +268,27 @@ export default function AddItemPage() {
                 </select>
               </div>
 
-              {/* Preparation Time Card */}
-              <div className="bg-[#1A1A1A] rounded-2xl border border-[#B3945B]/20 p-5 hover:border-[#B3945B]/40 transition">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xl">⏱️</span>
-                  <h3 className="text-[#B3945B] font-semibold">Preparation Time</h3>
-                  <span className="text-gray-500 text-sm ml-auto">Optional</span>
-                </div>
-                <div className="relative">
-                  <input
-                    type="number"
-                    placeholder="Minutes"
-                    value={formData.estimated_time}
-                    onChange={(e) => setFormData({...formData, estimated_time: e.target.value})}
-                    className="w-full p-3 rounded-xl bg-[#0A0A0A] border border-gray-700 text-white placeholder-gray-500 focus:border-[#B3945B] transition"
-                    min="1"
-                    max="60"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">min</span>
-                </div>
-              </div>
+             {/* Preparation Time Card */}
+<div className="bg-[#1A1A1A] rounded-2xl border border-[#B3945B]/20 p-5 hover:border-[#B3945B]/40 transition">
+  <div className="flex items-center gap-2 mb-4">
+    <span className="text-xl">⏱️</span>
+    <h3 className="text-[#B3945B] font-semibold">Preparation Time</h3>
+    <span className="text-gray-500 text-sm ml-auto">Optional</span>
+  </div>
+  <div className="relative">
+    <input
+      type="number"
+      placeholder="Minutes (e.g., 15)"
+      value={formData.estimated_time}
+      onChange={(e) => setFormData({...formData, estimated_time: e.target.value})}
+      className="w-full p-3 rounded-xl bg-[#0A0A0A] border border-gray-700 text-white placeholder-gray-500 focus:border-[#B3945B] transition"
+      min="1"
+      max="60"
+    />
+    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">min</span>
+  </div>
+  <p className="text-gray-500 text-xs mt-2">Leave empty for no time display</p>
+</div>
 
               {/* Spice Level Card (Food only) */}
               {formData.item_type === 'food' && (

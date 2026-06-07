@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import StarRating from '@/components/StarRating'
 import confetti from 'canvas-confetti'
@@ -20,6 +20,8 @@ export default function Home() {
   const [animatingImage, setAnimatingImage] = useState({})
   const [galleryAnimation, setGalleryAnimation] = useState('')
   const [categories, setCategories] = useState([])
+  const [hoveredItem, setHoveredItem] = useState(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     fetchMenuItems()
@@ -33,7 +35,7 @@ export default function Home() {
     const intervals = {}
     menuItems.forEach(item => {
       if (item.images && item.images.length > 1) {
-        const randomInterval = Math.floor(Math.random() * 3000) + 2000
+        const randomInterval = Math.floor(Math.random() * 3500) + 2000
         intervals[item.id] = setInterval(() => {
           setAnimatingImage(prev => ({ ...prev, [item.id]: 'image-crossfade' }))
           setTimeout(() => setAnimatingImage(prev => ({ ...prev, [item.id]: '' })), 500)
@@ -55,6 +57,14 @@ export default function Home() {
 
   const handleScroll = () => setShowBackToTop(window.scrollY > 500)
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  const handleCardMouseMove = (e, itemId) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20
+    setMousePosition({ x, y })
+    setHoveredItem(itemId)
+  }
 
   const getDisplayImage = (item) => {
     if (item.images && item.images.length > 0) {
@@ -79,10 +89,10 @@ export default function Home() {
   }
 
   const triggerConfetti = () => {
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#B3945B', '#E8C870', '#FFD700'] })
+    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#B3945B', '#E8C870', '#FFD700', '#D4AF37'] })
     setTimeout(() => {
-      confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, colors: ['#B3945B', '#E8C870'] })
-      confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors: ['#B3945B', '#E8C870'] })
+      confetti({ particleCount: 100, angle: 60, spread: 80, origin: { x: 0, y: 0.7 }, colors: ['#B3945B', '#E8C870'] })
+      confetti({ particleCount: 100, angle: 120, spread: 80, origin: { x: 1, y: 0.7 }, colors: ['#B3945B', '#E8C870'] })
     }, 150)
   }
 
@@ -91,7 +101,7 @@ export default function Home() {
     cats.forEach(cat => {
       grouped[cat.id] = { name: cat.name, items: [] }
     })
-    grouped['uncategorized'] = { name: 'Other Items', items: [] }
+    grouped['uncategorized'] = { name: 'Other Delights', items: [] }
     
     items.forEach(item => {
       if (item.category_id && grouped[item.category_id]) {
@@ -182,9 +192,9 @@ export default function Home() {
         const kodexaContainer = document.getElementById('kodexa-container')
         if (kodexaContainer) {
           if (kodexaUrl && kodexaUrl !== '') {
-            kodexaContainer.innerHTML = `<p class="text-gray-600 text-xs mt-2 text-center">Powered by <a href="${kodexaUrl}" target="_blank" rel="noopener noreferrer" class="text-[#B3945B] font-semibold hover:underline transition">KODEXA</a> — Premium Digital Solutions</p>`
+            kodexaContainer.innerHTML = `<p class="text-gray-500 text-xs mt-2 text-center">Powered by <a href="${kodexaUrl}" target="_blank" rel="noopener noreferrer" class="text-[#B3945B] font-semibold hover:underline transition">KODEXA</a> — Premium Digital Solutions</p>`
           } else {
-            kodexaContainer.innerHTML = `<p class="text-gray-600 text-xs mt-2 text-center">Powered by <span class="text-[#B3945B] font-semibold">KODEXA</span> — Premium Digital Solutions</p>`
+            kodexaContainer.innerHTML = `<p class="text-gray-500 text-xs mt-2 text-center">Powered by <span class="text-[#B3945B] font-semibold">KODEXA</span> — Premium Digital Solutions</p>`
           }
         }
       }
@@ -239,7 +249,7 @@ export default function Home() {
 
   const groupedItems = categories.length > 0 ? getGroupedItems(searchedItems, categories) : {}
 
-  if (loading) {
+if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] p-8">
         <div className="text-center mb-12">
@@ -278,111 +288,224 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A] particle-bg">
+    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] to-[#1A1A1A]">
       
-      <div style={{ textAlign: 'center', paddingTop: '60px', paddingBottom: '40px' }}>
-        <div style={{ width: '60px', height: '2px', background: 'linear-gradient(90deg, transparent, #B3945B, transparent)', margin: '0 auto 20px auto', animation: 'float 3s ease-in-out infinite' }}></div>
-        <h1 style={{ fontSize: '3rem', fontWeight: 'bold', color: '#B3945B', marginBottom: '16px', letterSpacing: '2px' }}>MINE FOOD RESORT</h1>
-        <p style={{ fontSize: '1rem', color: '#9CA3AF', maxWidth: '600px', margin: '0 auto' }}>Where culinary excellence meets underground luxury</p>
-        <div style={{ width: '60px', height: '2px', background: 'linear-gradient(90deg, transparent, #B3945B, transparent)', margin: '20px auto 0 auto', animation: 'float 3s ease-in-out infinite' }}></div>
-      </div>
-
-      <div className="flex justify-center gap-4 md:gap-6 mb-8">
-        <button onClick={() => setMenuType('food')} className={`px-6 py-3 md:px-8 md:py-3.5 min-h-[44px] min-w-[44px] rounded-full font-bold text-base md:text-lg transition-all duration-300 btn-shine ${menuType === 'food' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-white shadow-lg scale-105 animate-glow-pulse' : 'bg-[#2A2A2A] text-white border border-[#B3945B]/40 hover:bg-[#B3945B]/20 hover:text-[#B3945B]'}`}>🍽️ FOOD</button>
-        <button onClick={() => setMenuType('drinks')} className={`px-6 py-3 md:px-8 md:py-3.5 min-h-[44px] min-w-[44px] rounded-full font-bold text-base md:text-lg transition-all duration-300 btn-shine ${menuType === 'drinks' ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-white shadow-lg scale-105 animate-glow-pulse' : 'bg-[#2A2A2A] text-white border border-[#B3945B]/40 hover:bg-[#B3945B]/20 hover:text-[#B3945B]'}`}>🍷 DRINKS</button>
-      </div>
-
-      <div className="text-center mb-6 animate-slide-up">
-        <span className="text-[#B3945B] text-sm tracking-wider">{searchedItems.length} PREMIUM ITEMS AVAILABLE</span>
-      </div>
-
-      <div className="max-w-md mx-auto mb-6 px-4 animate-slide-up">
-        <div className="relative">
-          <input type="text" placeholder="SEARCH MENU..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full p-3 pl-12 min-h-[44px] rounded-lg bg-[#1A1A1A] border border-[#B3945B]/30 text-white placeholder-gray-500 focus:outline-none focus:border-[#B3945B] transition" />
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
-          {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#B3945B] transition w-8 h-8 flex items-center justify-center">✕</button>}
+      {/* Premium Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Animated particles */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-10 w-1 h-1 bg-[#B3945B] rounded-full animate-ping"></div>
+          <div className="absolute top-40 right-20 w-2 h-2 bg-[#E8C870] rounded-full animate-pulse"></div>
+          <div className="absolute bottom-20 left-1/3 w-1.5 h-1.5 bg-[#B3945B] rounded-full animate-bounce"></div>
+          <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-[#E8C870] rounded-full animate-ping"></div>
+        </div>
+        
+        <div className="relative text-center pt-20 pb-16 px-4">
+          <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#B3945B] to-transparent mx-auto mb-8 animate-float"></div>
+          <h1 className="text-5xl md:text-7xl font-bold gold-shimmer-text mb-6 tracking-wide">
+            MINE FOOD RESORT
+          </h1>
+          <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide">
+            Where culinary excellence meets underground luxury
+          </p>
+          <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#B3945B] to-transparent mx-auto mt-8 animate-float"></div>
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 animate-slide-up">
-        <button onClick={() => setSortBy('default')} className={`text-xs md:text-sm px-4 py-2 md:px-5 md:py-2.5 min-h-[44px] rounded-full transition-all ${sortBy === 'default' ? 'bg-[#B3945B] text-black' : 'text-gray-400 hover:text-[#B3945B]'}`}>Default</button>
-        <button onClick={() => setSortBy('price_asc')} className={`text-xs md:text-sm px-4 py-2 md:px-5 md:py-2.5 min-h-[44px] rounded-full transition-all ${sortBy === 'price_asc' ? 'bg-[#B3945B] text-black' : 'text-gray-400 hover:text-[#B3945B]'}`}>Price ↑</button>
-        <button onClick={() => setSortBy('price_desc')} className={`text-xs md:text-sm px-4 py-2 md:px-5 md:py-2.5 min-h-[44px] rounded-full transition-all ${sortBy === 'price_desc' ? 'bg-[#B3945B] text-black' : 'text-gray-400 hover:text-[#B3945B]'}`}>Price ↓</button>
-        <button onClick={() => setSortBy('name_asc')} className={`text-xs md:text-sm px-4 py-2 md:px-5 md:py-2.5 min-h-[44px] rounded-full transition-all ${sortBy === 'name_asc' ? 'bg-[#B3945B] text-black' : 'text-gray-400 hover:text-[#B3945B]'}`}>Name</button>
+      {/* Premium Toggle Buttons */}
+      <div className="flex justify-center gap-6 mb-10">
+        <button
+          onClick={() => setMenuType('food')}
+          className={`relative px-10 py-3.5 rounded-full font-bold text-lg transition-all duration-500 overflow-hidden group ${
+            menuType === 'food'
+              ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-xl scale-105'
+              : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30 hover:bg-[#B3945B]/10'
+          }`}
+        >
+          <span className="relative z-10 flex items-center gap-2">
+            <span className="text-xl">🍽️</span> FOOD
+          </span>
+          {menuType === 'food' && <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>}
+        </button>
+        <button
+          onClick={() => setMenuType('drinks')}
+          className={`relative px-10 py-3.5 rounded-full font-bold text-lg transition-all duration-500 overflow-hidden group ${
+            menuType === 'drinks'
+              ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-xl scale-105'
+              : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30 hover:bg-[#B3945B]/10'
+          }`}
+        >
+          <span className="relative z-10 flex items-center gap-2">
+            <span className="text-xl">🍷</span> DRINKS
+          </span>
+          {menuType === 'drinks' && <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>}
+        </button>
       </div>
 
+      {/* Premium Stats Bar */}
+      <div className="max-w-md mx-auto mb-10 px-4">
+        <div className="bg-[#1A1A1A]/50 backdrop-blur-sm rounded-full px-6 py-2 border border-[#B3945B]/20 text-center">
+          <span className="text-[#B3945B] text-sm tracking-wider">
+            ✨ {searchedItems.length} PREMIUM {menuType === 'food' ? 'DISHES' : 'BEVERAGES'} AVAILABLE ✨
+          </span>
+        </div>
+      </div>
+
+      {/* Premium Search Bar */}
+      <div className="max-w-md mx-auto mb-8 px-4">
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#B3945B] to-[#E8C870] rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-500"></div>
+          <input
+            type="text"
+            placeholder="🔍 SEARCH OUR MENU..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="relative w-full p-4 pl-12 rounded-xl bg-[#1A1A1A] border border-[#B3945B]/30 text-white placeholder-gray-500 focus:outline-none focus:border-[#B3945B] transition z-10"
+          />
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#B3945B] transition w-8 h-8 flex items-center justify-center z-10"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Premium Sort Options */}
+      <div className="flex flex-wrap justify-center gap-3 mb-12 px-4">
+        {['default', 'price_asc', 'price_desc', 'name_asc'].map((option) => (
+          <button
+            key={option}
+            onClick={() => setSortBy(option)}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              sortBy === option
+                ? 'bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg'
+                : 'bg-[#1A1A1A] text-gray-400 border border-[#B3945B]/30 hover:bg-[#B3945B]/10'
+            }`}
+          >
+            {option === 'default' ? 'Default' : option === 'price_asc' ? 'Price ↑' : option === 'price_desc' ? 'Price ↓' : 'Name'}
+          </button>
+        ))}
+      </div>
+
+      {/* Premium Menu Grid */}
       {Object.keys(groupedItems).length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4 opacity-50 animate-float">🍽️</div>
+          <div className="text-8xl mb-6 opacity-50 animate-float">🍽️</div>
           <h3 className="text-2xl font-bold text-white mb-2">No items found</h3>
           <p className="text-gray-400">Try changing your search or filters</p>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto px-4 pb-20 space-y-12">
+        <div className="max-w-7xl mx-auto px-4 pb-24 space-y-16">
           {Object.keys(groupedItems).map((groupId) => (
-            <div key={groupId}>
-              <div className="mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#B3945B] inline-block border-b-2 border-[#B3945B] pb-2">{groupedItems[groupId].name === 'Other Items' ? '🍽️' : '🍽️'} {groupedItems[groupId].name}</h2>
-                <p className="text-gray-500 text-sm mt-1">{groupedItems[groupId].items.length} {groupedItems[groupId].items.length === 1 ? 'item' : 'items'}</p>
+            <div key={groupId} className="animate-fade-in-up">
+              {/* Premium Category Header */}
+              <div className="flex items-center gap-4 mb-8 group">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#B3945B]/20 to-[#E8C870]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🍽️</span>
+                </div>
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white tracking-wide">
+                    {groupedItems[groupId].name}
+                  </h2>
+                  <div className="w-16 h-0.5 bg-gradient-to-r from-[#B3945B] to-transparent mt-2 group-hover:w-24 transition-all duration-500"></div>
+                </div>
+                <div className="flex-1"></div>
+                <div className="text-[#B3945B] text-sm bg-[#1A1A1A] px-3 py-1 rounded-full">
+                  {groupedItems[groupId].items.length} items
+                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              
+              {/* Premium Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {groupedItems[groupId].items.map((item, index) => (
-                  <div key={item.id} onClick={() => { setSelectedItem(item); setSelectedImageIndex(0); }} className="group bg-gradient-to-b from-[#1A1A1A] to-[#0F0F0F] rounded-2xl overflow-hidden border border-[#B3945B]/20 hover:border-[#B3945B]/60 transition-all duration-500 cursor-pointer card-hover-effect relative" style={{ animationDelay: `${index * 0.05}s` }}>
+                  <div
+                    key={item.id}
+                    onClick={() => { setSelectedItem(item); setSelectedImageIndex(0); }}
+                    onMouseMove={(e) => handleCardMouseMove(e, item.id)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    className="group relative bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] rounded-2xl overflow-hidden border border-[#B3945B]/20 hover:border-[#B3945B]/60 transition-all duration-500 cursor-pointer"
+                    style={{
+                      transform: hoveredItem === item.id ? `perspective(1000px) rotateX(${mousePosition.y * 0.5}deg) rotateY(${mousePosition.x * 0.5}deg)` : 'perspective(1000px) rotateX(0) rotateY(0)',
+                      transition: 'transform 0.2s ease-out'
+                    }}
+                  >
+                    {/* Glow effect on hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-[#B3945B]/10 via-transparent to-transparent pointer-events-none"></div>
                     
                     {/* Chef's Pick Badge */}
                     {item.avg_rating > 4.5 && (
-                      <span className="absolute top-2 left-2 bg-gradient-to-r from-[#B3945B] to-[#E8C870] text-black text-xs px-2 py-1 rounded-full z-10 font-bold shadow-md">
+                      <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-[#B3945B] to-[#E8C870] text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-pulse">
                         👨‍🍳 CHEF'S PICK
-                      </span>
+                      </div>
                     )}
                     
-                    {item.images && item.images.length > 0 ? (
-                      <div className="h-48 overflow-hidden image-zoom relative">
-                        <img src={getDisplayImage(item)} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                        {item.images.length > 1 && <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">{((currentImageIndex[item.id] || 0) + 1)} / {item.images.length}</div>}
-                      </div>
-                    ) : (
-                      <div className="h-48 bg-gradient-to-br from-[#B3945B]/10 to-transparent flex items-center justify-center">
-                        <span className="text-5xl animate-float">{menuType === 'food' ? '🍽️' : '🍷'}</span>
-                      </div>
-                    )}
-                    <div className="p-4">
+                    {/* Image Container */}
+                    <div className="relative h-56 overflow-hidden">
+                      {item.images && item.images.length > 0 ? (
+                        <>
+                          <img 
+                            src={getDisplayImage(item)} 
+                            alt={item.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-60"></div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#B3945B]/20 to-[#1A1A1A] flex items-center justify-center">
+                          <span className="text-6xl animate-float">{menuType === 'food' ? '🍽️' : '🍷'}</span>
+                        </div>
+                      )}
+                      
+                      {/* Image Counter */}
+                      {item.images && item.images.length > 1 && (
+                        <div className="absolute bottom-3 right-3 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs z-20">
+                          {((currentImageIndex[item.id] || 0) + 1)} / {item.images.length}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="p-5 relative z-10">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-white group-hover:text-[#B3945B] transition">{item.name}</h3>
-                        {item.is_featured && <span className="text-[#B3945B] text-xs animate-pulse">⭐</span>}
+                        <h3 className="text-xl font-bold text-white group-hover:text-[#B3945B] transition-colors duration-300">
+                          {item.name}
+                        </h3>
+                        {item.is_featured && (
+                          <span className="text-[#B3945B] text-sm animate-pulse">✦</span>
+                        )}
                       </div>
-                      <p className="text-gray-400 text-sm mb-2 line-clamp-2">{item.description || 'Premium dish crafted with excellence'}</p>
+                      <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                        {item.description || 'A premium dish crafted with excellence'}
+                      </p>
                       
-                      {/* Dietary Icons */}
-                      <div className="flex gap-2 mt-1 mb-2">
-                        {item.spice_level === 'hot' && (
-                          <span className="text-red-500 text-sm" title="Very Spicy">🌶️🔥</span>
-                        )}
-                        {item.spice_level === 'medium' && (
-                          <span className="text-orange-500 text-sm" title="Medium Spicy">🌶️</span>
-                        )}
-                        {item.spice_level === 'mild' && (
-                          <span className="text-yellow-500 text-sm" title="Mild Spicy">🌶️</span>
-                        )}
-                        {item.spice_level === 'none' && item.item_type === 'food' && (
-                          <span className="text-green-500 text-sm" title="Not Spicy">⚪</span>
-                        )}
-                        {item.item_type === 'drinks' && (
-                          <span className="text-blue-400 text-sm" title="Beverage">🥤</span>
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {item.spice_level === 'hot' && <span className="text-red-400 text-xs">🌶️ Hot</span>}
+                        {item.spice_level === 'medium' && <span className="text-orange-400 text-xs">🌶️ Medium</span>}
+                        {item.spice_level === 'mild' && <span className="text-yellow-400 text-xs">🌶️ Mild</span>}
+                        {item.estimated_time && (
+                          <span className="text-gray-500 text-xs">⏱️ {item.estimated_time} min</span>
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-1 mb-2">
-                        <span className="text-xs text-[#B3945B]">⏱️</span>
-                        <span className="text-xs text-gray-400">{item.estimated_time || 15} min</span>
-                      </div>
-                      <div className="flex items-center gap-2 mb-3">
+                      {/* Rating */}
+                      <div className="flex items-center gap-2 mb-4">
                         <StarRating rating={parseFloat(getAverageRating(item.id))} size="small" />
                         <span className="text-gray-500 text-xs">({getRatingCount(item.id)})</span>
                       </div>
-                      <div className="flex justify-between items-center mt-3">
-                        <span className="text-xl font-bold bg-gradient-to-r from-[#E8C870] to-[#B3945B] bg-clip-text text-transparent">BIRR {item.price}</span>
-                        <button className="px-4 py-2 min-h-[44px] min-w-[44px] bg-[#B3945B]/20 text-[#B3945B] text-sm rounded-full hover:bg-[#B3945B]/40 transition btn-shine">View</button>
+                      
+                      {/* Price and Action */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold bg-gradient-to-r from-[#E8C870] to-[#B3945B] bg-clip-text text-transparent">
+                          BIRR {item.price}
+                        </span>
+                        <button className="px-5 py-2 bg-[#B3945B]/20 text-[#B3945B] text-sm rounded-full hover:bg-[#B3945B] transition-all duration-300 hover:scale-105">
+                          View Details
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -393,77 +516,116 @@ export default function Home() {
         </div>
       )}
 
+      {/* Premium Back to Top Button */}
       {showBackToTop && (
-        <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-[#B3945B] text-black w-12 h-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50 flex items-center justify-center">↑</button>
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-[#B3945B] to-[#C4A25A] text-black shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50 flex items-center justify-center group"
+        >
+          <span className="text-xl group-hover:-translate-y-0.5 transition-transform">↑</span>
+        </button>
       )}
 
+      {/* Premium Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedItem(null)}>
-          <div className="max-w-2xl w-full bg-gradient-to-b from-[#1A1A1A] to-[#0F0F0F] rounded-2xl border border-[#B3945B]/30 overflow-hidden animate-bounce-in max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            {selectedItem.images && selectedItem.images.length > 0 && (
-              <div className="relative">
-                <img src={selectedItem.images[selectedImageIndex]} alt={selectedItem.name} className={`w-full h-72 object-cover transition-all duration-400 ${galleryAnimation}`} />
-                {selectedItem.images.length > 1 && (
-                  <>
-                    <button onClick={prevGalleryImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full transition hover:scale-110 text-xl flex items-center justify-center">◀</button>
-                    <button onClick={nextGalleryImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full transition hover:scale-110 text-xl flex items-center justify-center">▶</button>
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-                      {selectedItem.images.map((_, idx) => (
-                        <button key={idx} onClick={(e) => { e.stopPropagation(); setGalleryAnimation('image-crossfade'); setTimeout(() => setGalleryAnimation(''), 400); setSelectedImageIndex(idx); }} className={`transition-all duration-300 w-8 h-8 flex items-center justify-center ${idx === selectedImageIndex ? 'w-6 h-2 bg-[#B3945B] rounded-full' : 'w-2 h-2 bg-gray-500 rounded-full hover:bg-gray-400'}`} />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-3xl font-bold text-white">{selectedItem.name}</h2>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-sm text-[#B3945B]">⏱️ Estimated preparation time:</span>
-                    <span className="text-sm text-white font-semibold">{selectedItem.estimated_time || 15} minutes</span>
-                  </div>
-                </div>
-                <button onClick={() => setSelectedItem(null)} className="text-gray-400 hover:text-[#B3945B] text-3xl transition-transform hover:scale-110 w-10 h-10 flex items-center justify-center">✕</button>
-              </div>
-
-              <div className="flex items-center gap-3 mb-4">
-                <StarRating rating={parseFloat(getAverageRating(selectedItem.id))} size="large" />
-                <span className="text-gray-400 text-sm">{getRatingCount(selectedItem.id)} reviews</span>
-              </div>
-
-              <p className="text-gray-300 leading-relaxed mb-6">{selectedItem.description || 'A signature dish crafted by our expert chefs using the finest ingredients.'}</p>
-
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-4xl font-bold bg-gradient-to-r from-[#E8C870] to-[#B3945B] bg-clip-text text-transparent">BIRR {selectedItem.price}</span>
-                {selectedItem.spice_level && selectedItem.spice_level !== 'none' && (
-                  <div className="px-3 py-1 bg-red-500/20 border border-red-500/50 rounded-full">
-                    <span className="text-red-400 text-sm">🌶️ {selectedItem.spice_level.toUpperCase()} SPICE</span>
-                  </div>
-                )}
-              </div>
-
-              {selectedItem.item_type === 'both' && (
-                <div className="mb-4">
-                  <span className="inline-block px-3 py-1 bg-[#B3945B]/20 text-[#B3945B] text-sm rounded-full">🍽️ Food & 🍷 Drink</span>
+        <div className="fixed inset-0 bg-black/98 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedItem(null)}>
+          <div className="max-w-3xl w-full bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] rounded-3xl border border-[#B3945B]/30 overflow-hidden animate-scale-in max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {/* Hero Image */}
+            <div className="relative h-80 md:h-96">
+              {selectedItem.images && selectedItem.images.length > 0 ? (
+                <>
+                  <img 
+                    src={selectedItem.images[selectedImageIndex]} 
+                    alt={selectedItem.name} 
+                    className={`w-full h-full object-cover transition-all duration-500 ${galleryAnimation}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent"></div>
+                </>
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-[#B3945B]/20 to-[#1A1A1A] flex items-center justify-center">
+                  <span className="text-8xl">{selectedItem.item_type === 'food' ? '🍽️' : '🍷'}</span>
                 </div>
               )}
-
-              <div className="mt-6 pt-4 border-t border-[#B3945B]/20">
-                <p className="text-gray-400 text-sm mb-3">Rate this dish:</p>
-                <StarRating rating={0} onRate={(rating) => submitRating(selectedItem.id, rating)} size="large" />
-                {ratingSubmitting && <p className="text-[#B3945B] text-xs mt-2 animate-pulse">Submitting...</p>}
+              
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#B3945B] to-transparent"></div>
+              
+              {selectedItem.images && selectedItem.images.length > 1 && (
+                <>
+                  <button onClick={prevGalleryImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm hover:bg-[#B3945B] text-white hover:text-black flex items-center justify-center transition-all duration-300 hover:scale-110">←</button>
+                  <button onClick={nextGalleryImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm hover:bg-[#B3945B] text-white hover:text-black flex items-center justify-center transition-all duration-300 hover:scale-110">→</button>
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {selectedItem.images.map((_, idx) => (
+                      <button key={idx} onClick={() => setSelectedImageIndex(idx)} className={`transition-all duration-300 ${idx === selectedImageIndex ? 'w-8 h-1.5 bg-[#B3945B] rounded-full' : 'w-3 h-1.5 bg-white/50 rounded-full'}`} />
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {selectedItem.is_featured && (
+                <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-[#B3945B] to-[#E8C870] text-black text-xs font-bold rounded-full shadow-lg z-20">
+                  SIGNATURE
+                </div>
+              )}
+            </div>
+            
+            {/* Content */}
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">{selectedItem.name}</h2>
+                  <div className="flex items-center gap-3">
+                    <StarRating rating={parseFloat(getAverageRating(selectedItem.id))} size="large" />
+                    <span className="text-gray-400 text-sm">{getRatingCount(selectedItem.id)} reviews</span>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedItem(null)} className="w-10 h-10 rounded-full bg-[#1A1A1A] hover:bg-[#B3945B]/20 text-gray-400 hover:text-[#B3945B] transition-all duration-300 flex items-center justify-center text-xl">✕</button>
               </div>
-
-              <div className="mt-6 pt-4 border-t border-[#B3945B]/20">
-                <p className="text-center text-gray-500 text-sm">📋 Please inform your waiter to place an order</p>
+              
+              <p className="text-gray-300 leading-relaxed mb-8 text-base">{selectedItem.description || 'A signature dish crafted by our expert chefs using the finest ingredients.'}</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#B3945B]/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">💰</span>
+                    <span className="text-gray-400 text-sm">PRICE</span>
+                  </div>
+                  <p className="text-3xl font-bold text-[#B3945B]">BIRR {selectedItem.price}</p>
+                </div>
+                <div className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#B3945B]/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">⏱️</span>
+                    <span className="text-gray-400 text-sm">PREP TIME</span>
+                  </div>
+                  <p className="text-2xl font-semibold text-white">{selectedItem.estimated_time ? `${selectedItem.estimated_time} min` : '—'}</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-3 mb-8">
+                <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${selectedItem.item_type === 'food' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : selectedItem.item_type === 'drinks' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'}`}>
+                  {selectedItem.item_type === 'food' ? '🍽️ Food' : selectedItem.item_type === 'drinks' ? '🍷 Drinks' : '🍽️🍷 Food & Drink'}
+                </span>
+                {selectedItem.spice_level && selectedItem.spice_level !== 'none' && (
+                  <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-red-500/20 text-red-400 border border-red-500/30">🌶️ {selectedItem.spice_level.toUpperCase()}</span>
+                )}
+              </div>
+              
+              <div className="pt-6 border-t border-[#B3945B]/20">
+                <p className="text-gray-400 text-sm mb-4">Rate this dish</p>
+                <div className="flex items-center gap-4">
+                  <StarRating rating={0} onRate={(rating) => submitRating(selectedItem.id, rating)} size="large" />
+                  {ratingSubmitting && <span className="text-[#B3945B] text-sm animate-pulse">Submitting...</span>}
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-4 text-center">
+                <p className="text-gray-500 text-sm flex items-center justify-center gap-2">📋 Please inform your waiter to place an order</p>
               </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Premium Footer */}
       <footer className="bg-[#0A0A0A] border-t border-[#B3945B]/20 mt-20 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-8">

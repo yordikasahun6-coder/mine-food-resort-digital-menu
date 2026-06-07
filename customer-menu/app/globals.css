@@ -154,3 +154,4 @@ h1, h2, h3, h4, .premium-font {
   50% { opacity: 0.5; }
 }
 .animate-pulse { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
